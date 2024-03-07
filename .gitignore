@@ -1,2 +1,6 @@
 cmake-build-debug
 .idea
+
+lab2
+main.o
+vector.o

@@ -48,7 +48,7 @@ void vector_free(Vector *vector) {
 }
 
 void another_vector_free(Vector **vector) {
-    if (*vector == NULL | vector == NULL) {
+    if (*vector == NULL || vector == NULL) {
         return;
     }
     free((*vector)->data);

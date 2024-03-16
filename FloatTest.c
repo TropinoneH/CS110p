@@ -1,28 +1,13 @@
-#include "FloatCalculate.h"
-#include <malloc.h>
-#include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
+#include "FloatCalculate.h"
 
 const size_t SIGN_BIT = 1;
 const size_t EXPONENT_BITS = 8;
 const size_t MANTISSA_BITS = 23;
 
-static int32_t get_norm_bias(void) { return 1 - (1 << (EXPONENT_BITS - 1)); }
-
-static int32_t get_denorm_bias(void) { return 1 + get_norm_bias(); }
-
-static bool test_rightmost_all_zeros(uint32_t number, size_t bits) {
-    uint32_t mask = (1ull << bits) - 1;
-    return (number & mask) == 0;
-}
-
-static bool test_rightmost_all_ones(uint32_t number, size_t bits) {
-    uint32_t mask = (1ull << bits) - 1;
-    return (number & mask) == mask;
-}
-
-// You can also design a function of your own.
 static void build_bitstring(Float input, char *output) {
     output[0] = input.sign == 1 ? '1' : '0';
     if (input.type == INFINITY_T) {
@@ -70,7 +55,16 @@ static void build_bitstring(Float input, char *output) {
     }
 }
 
-// You can also design a function of your own.
+static bool test_rightmost_all_zeros(uint32_t number, size_t bits) {
+    uint32_t mask = (1ull << bits) - 1;
+    return (number & mask) == 0;
+}
+
+static bool test_rightmost_all_ones(uint32_t number, size_t bits) {
+    uint32_t mask = (1ull << bits) - 1;
+    return (number & mask) == mask;
+}
+
 static Float parse_bitstring(const char *input) {
     Float f_input;
     f_input.sign = input[0] == '1' ? 1 : 0;
@@ -103,18 +97,23 @@ static Float parse_bitstring(const char *input) {
     return f_input;
 }
 
-// You can also design a function of your own.
-static Float float_add_impl(Float a, Float b) {
-    Float result;
-    return result;
-}
 
-// You should not modify the signature of this function
-void float_add(const char *a, const char *b, char *result) {
-    // TODO: Implement this function
-    // A possible implementation of the function:
-    Float fa = parse_bitstring(a);
-    Float fb = parse_bitstring(b);
-    Float fresult = float_add_impl(fa, fb);
-    build_bitstring(fresult, result);
+
+int main(void) {
+    Float a;
+    a.type = NAN_T;
+    a.sign = 0; // positive for 0, negative for 1
+    a.mantissa = 838860;
+    a.exponent = 120;
+    char out[33];
+    build_bitstring(a, out);
+    out[32] = '\0';
+    printf("%s\n", out);
+    Float b = parse_bitstring(out);
+    printf("%d %d %d %d\n", b.type, b.sign, b.mantissa, b.exponent);
+    char out2[33];
+    build_bitstring(b, out2);
+    out2[32] = '\0';
+    printf("%s\n", out2);
+    return 0;
 }

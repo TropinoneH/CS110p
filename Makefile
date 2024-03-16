@@ -3,15 +3,16 @@ CFLAGS = -g -Wpedantic -Wall -Wextra -Wvla -Werror -std=c11
 
 .PHONY: all build test clean memcheck
 
-all: test
+all: build
 
-FloatCalculate:
+FloatCalculate: clean
 	gcc test.c FloatCalculate.c $(CFLAGS) -o FloatCalculate -lm
 
 build: FloatCalculate
 
-test: build
-	./FloatCalculate
+test:
+	gcc FloatTest.c -o FloatTest
+	./FloatTest
 
 clean:
 	rm -f FloatCalculate

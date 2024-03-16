@@ -6,19 +6,19 @@
 
 // You can modify the following enum and struct
 typedef enum {
-  NORMALIZED_T = 0,
-  DENORMALIZED_T,
-  INFINITY_T,
-  ZERO_T,
-  NAN_T,
+    NORMALIZED_T = 0,
+    DENORMALIZED_T,
+    INFINITY_T,
+    ZERO_T,
+    NAN_T,
 } FloatType;
 
 typedef struct {
-  uint32_t sign;
-  uint32_t exponent;
-  uint32_t mantissa;
+    uint32_t sign;
+    uint32_t exponent;
+    uint32_t mantissa;
 
-  FloatType type;
+    FloatType type;
 } Float;
 
 extern const size_t SIGN_BIT;

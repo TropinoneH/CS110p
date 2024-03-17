@@ -42,17 +42,17 @@ main_exit:
 	ecall # Exit
 
 squareSum:
-    add t5, x0, x0
+    add t0, x0, x0
     bgez a0, prepare_loop
     neg a0, a0
 prepare_loop:
-    add t6, a0, x0
-    beqz t6, finish
+    add t1, a0, x0
+    beqz t1, finish
 loop:
-    mul t7, t6, t6
-    add t5, t5, t7
-    addi t6, t6, -1
-    bgtz t6, loop
+    mul t2, t1, t1
+    add t0, t0, t2
+    addi t1, t1, -1
+    bgtz t1, loop
 finish:
-    add a0, t5, x0
+    add a0, t0, x0
     ret

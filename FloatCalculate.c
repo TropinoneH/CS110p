@@ -8,9 +8,9 @@ const size_t SIGN_BIT = 1;
 const size_t EXPONENT_BITS = 8;
 const size_t MANTISSA_BITS = 23;
 
-static int32_t get_norm_bias(void) { return 1 - (1 << (EXPONENT_BITS - 1)); }
+//static int32_t get_norm_bias(void) { return 1 - (1 << (EXPONENT_BITS - 1)); }
 
-static int32_t get_denorm_bias(void) { return 1 + get_norm_bias(); }
+//static int32_t get_denorm_bias(void) { return 1 + get_norm_bias(); }
 
 static bool test_rightmost_all_zeros(uint32_t number, size_t bits) {
     uint32_t mask = (1ull << bits) - 1;
@@ -59,6 +59,7 @@ static void build_bitstring(Float input, char *output) {
         output[32] = '\0';
         return;
     } else {
+        input.mantissa -= (1ull << 23);
         for (size_t i = 0; i < EXPONENT_BITS; ++i) {
             output[i + 1] = (input.exponent & (1u << (EXPONENT_BITS - 1 - i))) ? '1' : '0';
         }
@@ -98,20 +99,90 @@ static Float parse_bitstring(const char *input) {
         f_input.type = DENORMALIZED_T;
     } else {
         f_input.type = NORMALIZED_T;
+        f_input.mantissa += (1ull << 23);
     }
 
     return f_input;
 }
 
+static Float normalize(Float result) {
+    // 处理进位
+    // 首先是进位的情况：
+    if (result.mantissa > (1ull << 27) - 1) {
+        result.mantissa >>= 1;
+        ++result.exponent;
+    }
+    // infinity
+    if (result.exponent >= (1ull << 8) - 1) {
+        result.type = INFINITY_T;
+        result.mantissa = 0;
+    }
+    // 退位
+    while (result.mantissa < (1ull << 26)) {
+        --result.exponent;
+        result.mantissa <<= 1;
+    }
+    //   denormalized
+    if (result.exponent == 0) {
+        result.type = DENORMALIZED_T;
+        result.mantissa += 1ull << 22;
+    }
+    result.mantissa >>= 3;
+    return result;
+}
+
 // You can also design a function of your own.
 static Float float_add_impl(Float a, Float b) {
     Float result;
-    return result;
+    if (a.type == NAN_T || b.type == NAN_T) {
+        return (Float) {.type = NAN_T};
+    } else if (a.type == INFINITY_T && b.type == INFINITY_T) {
+        if (a.sign == b.sign) {
+            return a;
+        } else {
+            return (Float) {.type = NAN_T};
+        }
+    } else if (a.type == INFINITY_T || b.type == ZERO_T) {
+        return a;
+    } else if (b.type == INFINITY_T || a.type == ZERO_T) {
+        return b;
+    }
+
+    if (a.exponent < b.exponent || (a.exponent == b.exponent && a.mantissa < b.mantissa)) {
+        // make sure A is the larger one
+        Float temp = a;
+        a = b;
+        b = temp;
+    }
+
+    // a.mantissa > b.mantissa
+    result.sign = a.sign;
+    result.type = a.type;
+    result.exponent = a.exponent;
+    // first, 对齐
+    uint32_t delta_exp = a.exponent - b.exponent;
+    // get `g, r` bit
+    a.mantissa <<= 2;
+    b.mantissa <<= 2;
+    // get `s` bit
+    uint32_t s = 0;
+    if (!test_rightmost_all_zeros(b.mantissa, delta_exp)) s = 1;
+    // 对齐
+    b.mantissa >>= delta_exp;
+    b.mantissa <<= 1;
+    b.mantissa += s;
+    // a也需要有s位
+    a.mantissa <<= 1;
+    // second, 相加
+    result.mantissa = a.sign == b.sign ? a.mantissa + b.mantissa : a.mantissa - b.mantissa;
+    // third, normalize.
+    return normalize(result);
+
 }
 
 // You should not modify the signature of this function
 void float_add(const char *a, const char *b, char *result) {
-    // TODO: Implement this function
+    // Implement this function
     // A possible implementation of the function:
     Float fa = parse_bitstring(a);
     Float fb = parse_bitstring(b);

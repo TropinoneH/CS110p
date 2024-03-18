@@ -44,6 +44,7 @@ static void build_bitstring(Float input, char *output) {
         output[32] = '\0';
         return;
     } else {
+        input.mantissa -= 1ull << 24;
         for (size_t i = 0; i < EXPONENT_BITS; ++i) {
             output[i + 1] = (input.exponent & (1u << (EXPONENT_BITS - 1 - i))) ? '1' : '0';
         }
@@ -92,6 +93,7 @@ static Float parse_bitstring(const char *input) {
         f_input.type = DENORMALIZED_T;
     } else {
         f_input.type = NORMALIZED_T;
+        f_input.mantissa += 1ull << 24;
     }
 
     return f_input;
@@ -100,20 +102,21 @@ static Float parse_bitstring(const char *input) {
 
 
 int main(void) {
-    Float a;
-    a.type = NAN_T;
-    a.sign = 0; // positive for 0, negative for 1
-    a.mantissa = 838860;
-    a.exponent = 120;
-    char out[33];
-    build_bitstring(a, out);
-    out[32] = '\0';
-    printf("%s\n", out);
+//    Float a;
+//    a.type = NAN_T;
+//    a.sign = 0; // positive for 0, negative for 1
+//    a.mantissa = 838860;
+//    a.exponent = 120;
+    char out[33] = "11011000010011110100100011011010";
+//    build_bitstring(a, out);
+//    out[32] = '\0';
+//    printf("%s\n", out);
     Float b = parse_bitstring(out);
     printf("%d %d %d %d\n", b.type, b.sign, b.mantissa, b.exponent);
     char out2[33];
     build_bitstring(b, out2);
     out2[32] = '\0';
     printf("%s\n", out2);
+//    printf("%llu\n", 1ull << -1);
     return 0;
 }

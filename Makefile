@@ -9,9 +9,11 @@ FloatCalculate: clean
 	gcc test.c FloatCalculate.c $(CFLAGS) -o FloatCalculate -lm
 
 build: FloatCalculate
+	./FloatCalculate
 
 test:
-	gcc FloatTest.c -o FloatTest
+	rm FloatTest
+	gcc FloatTest.c $(CFLAGS) -o FloatTest
 	./FloatTest
 
 clean:

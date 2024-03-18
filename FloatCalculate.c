@@ -118,14 +118,13 @@ static Float normalize(Float result) {
         result.mantissa = 0;
     }
     // 退位
-    while (result.mantissa < (1ull << 26)) {
+    while (result.type == NORMALIZED_T && result.mantissa < (1ull << 26)) {
         --result.exponent;
         result.mantissa <<= 1;
     }
     //   denormalized
     if (result.exponent == 0) {
         result.type = DENORMALIZED_T;
-        result.mantissa += 1ull << 22;
     }
     result.mantissa >>= 3;
     return result;

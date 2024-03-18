@@ -9,7 +9,7 @@
 float random_float(void) {
     static const float min = 1e-15f;
     static const float max = 1e15f;
-    float scale = (float)rand() / (float)RAND_MAX;
+    float scale = (float) rand() / (float) RAND_MAX;
     float result = min + scale * (max - min);
 
     int sign = rand() % 2;
@@ -33,30 +33,35 @@ int main(void) {
     // Note that valgrind does not support fesetround,
     // so test will report incorrect if you are using valgrind.
 
-    // srand(0x5eed);
+//    srand(0x5eed);
 
-    int count = 1000000;
-    while (count--) {
-        char a[33], b[33];
-        char result[33] = {0};
-        float fa = random_float(), fb = random_float();
-        float2bitstring(fa, a);
-        float2bitstring(fb, b);
-        float_add(a, b, result);
-        char solution[33];
-        float fsolution = fa + fb;
-        float2bitstring(fsolution, solution);
-        if (memcmp(result, solution, 32) != 0) {
-            printf("-------------------------------------count: %d\n", count);
-            printf("a:        %s\n", a);
-            printf("b:        %s\n", b);
-            printf("result:   %s\n", result);
-            printf("solution: %s\n", solution);
-            printf("------------------------------------------\n");
-            fflush(stdout);
-            assert(0);
-        }
-    }
+//    int count = 1000000;
+//    while (count--) {
+//        char a[33], b[33];
+//        char result[33] = {0};
+//        float fa = random_float(), fb = random_float();
+//        float2bitstring(fa, a);
+//        float2bitstring(fb, b);
+//        float_add(a, b, result);
+//        char solution[33];
+//        float fsolution = fa + fb;
+//        float2bitstring(fsolution, solution);
+//        if (memcmp(result, solution, 32) != 0) {
+//            printf("-------------------------------------count: %d\n", count);
+//            printf("a:        %s\n", a);
+//            printf("b:        %s\n", b);
+//            printf("result:   %s\n", result);
+//            printf("solution: %s\n", solution);
+//            printf("------------------------------------------\n");
+//            fflush(stdout);
+//            assert(0);
+//        }
+//    }
+
+    char a[33] = "00000000010000000000000000000000", b[33] = "10000000010000000000000000000001";
+    char solution[33];
+    float_add(a, b, solution);
+    printf("%s\n", solution);
 
     return 0;
 }

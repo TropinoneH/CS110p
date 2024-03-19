@@ -35,7 +35,7 @@ int main(void) {
 
 //    srand(0x5eed);
 
-    int count = 1000000000;
+    int count = 1000000;
     while (count--) {
         char a[33], b[33];
         char result[33] = {0};

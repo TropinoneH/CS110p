@@ -173,10 +173,7 @@ static Float float_add_impl(Float a, Float b) {
         b = temp;
     }
 
-    // TODO: fix the bugs in calc with denormalized float
-//    if (a.type != DENORMALIZED_T && b.type == DENORMALIZED_T) {
-//        --a.exponent;
-//    }
+    // fix the bugs in calc with denormalized float
     // a.mantissa > b.mantissa
     result.sign = a.sign;
     result.type = a.type;

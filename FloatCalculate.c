@@ -125,12 +125,12 @@ static Float normalize(Float result) {
             return result;
         }
         // 退位
-        while (result.mantissa < (1ull << 26)) {
+        while (result.exponent != 0 && result.mantissa < (1ull << 26)) {
+            --result.exponent;
             if (result.exponent == 0) {
                 result.type = DENORMALIZED_T;
                 return normalize(result);
             }
-            --result.exponent;
             result.mantissa <<= 1;
         }
         // denormalized

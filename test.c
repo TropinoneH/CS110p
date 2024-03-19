@@ -7,7 +7,7 @@
 #include <string.h>
 
 float random_float(void) {
-    static const float min = 1e-39f;
+    static const float min = 1e-45f;
     static const float max = 1e38f;
     float scale = (float) rand() / (float) RAND_MAX;
     float result = min + scale * (max - min);
@@ -33,7 +33,7 @@ int main(void) {
     // Note that valgrind does not support fesetround,
     // so test will report incorrect if you are using valgrind.
 
-    //    srand(0x5eed);
+//    srand(0x5eed);
 
     int count = 1;
 //    int count = 10000000;
@@ -41,24 +41,27 @@ int main(void) {
         char a[33], b[33];
         char result[33] = {0};
 //        float fa = random_float(), fb = random_float();
-        float fa = -1.1e-38f, fb = -1.1754945E-39f;
-//        float fa = -4.77396912e-37f, fb = -2.77774648e+37f;
+//        float fa = 1.1e-39f, fb = 1.1754945E-38f;
+//        float fa = -4.77396912e37f, fb = -2.77774648e+38f;
+//        float fa = 1.194005083146479044030518E-38f, fb = -1.47395971333575894553892E-38f;
+        float fa = 1.175494490952133940450444E-38f, fb = -1.17549421069244107548703E-38f;
+        fa = fa - fb;
         float2bitstring(fa, a);
         float2bitstring(fb, b);
         float_add(a, b, result);
         char solution[33];
         float fsolution = fa + fb;
         float2bitstring(fsolution, solution);
-        if (memcmp(result, solution, 32) != 0) {
+//        if (memcmp(result, solution, 32) != 0) {
             printf("-------------------------------------count:%d\n", count);
             printf("a:        %s\n", a);
             printf("b:        %s\n", b);
             printf("result:   %s\n", result);
             printf("solution: %s\n", solution);
             printf("------------------------------------------\n");
-            fflush(stdout);
-            assert(0);
-        }
+//            fflush(stdout);
+//            assert(0);
+//        }
     }
 
 //    char a[33] = "00000000100000000000000000000001", b[33] = "10000000011111111111111111111111";

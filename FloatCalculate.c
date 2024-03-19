@@ -174,15 +174,15 @@ static Float float_add_impl(Float a, Float b) {
     }
 
     // TODO: fix the bugs in calc with denormalized float
-    if (a.type != DENORMALIZED_T && b.type == DENORMALIZED_T) {
-        --a.exponent;
-    }
+//    if (a.type != DENORMALIZED_T && b.type == DENORMALIZED_T) {
+//        --a.exponent;
+//    }
     // a.mantissa > b.mantissa
     result.sign = a.sign;
     result.type = a.type;
     result.exponent = a.exponent;
     // first, 对齐
-    uint32_t delta_exp = a.exponent - b.exponent;
+    uint32_t delta_exp = a.exponent - b.exponent - (a.type == NORMALIZED_T && b.type == DENORMALIZED_T ? 1 : 0);
     // get `g, r` bit
     a.mantissa <<= 2;
     b.mantissa <<= 2;

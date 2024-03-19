@@ -137,8 +137,8 @@ static Float normalize(Float result) {
             return normalize(result);
         }
     } else {
-        if (result.mantissa > (1ull << 27) - 1) {
-            result.mantissa >>= 1;
+        if (result.mantissa > (1ull << 26) - 1) {
+            result.mantissa -= (1ull << 26);
             ++result.exponent;
             result.type = NORMALIZED_T;
         }
@@ -195,8 +195,7 @@ static Float float_add_impl(Float a, Float b) {
     // a也需要有s位
     a.mantissa <<= 1;
     // second, 相加
-    result.mantissa =
-            a.sign == b.sign ? a.mantissa + b.mantissa : a.mantissa - b.mantissa;
+    result.mantissa = a.sign == b.sign ? a.mantissa + b.mantissa : a.mantissa - b.mantissa;
     // third, normalize.
     return normalize(result);
 }

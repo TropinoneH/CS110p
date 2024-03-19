@@ -44,10 +44,8 @@ static void build_bitstring(Float input, char *output) {
         output[32] = '\0';
         return;
     } else if (input.type == ZERO_T) {
-        for (size_t i = 0; i < EXPONENT_BITS + MANTISSA_BITS; ++i) {
-            output[i + 1] = '0';
-        }
-        output[32] = '\0';
+        for (size_t i = 0; i < SIGN_BIT + EXPONENT_BITS + MANTISSA_BITS; ++i)
+            output[i] = '0';
         return;
     } else if (input.type == DENORMALIZED_T) {
         for (size_t i = 0; i < EXPONENT_BITS; ++i) {
@@ -109,6 +107,10 @@ static Float parse_bitstring(const char *input) {
 }
 
 static Float normalize(Float result) {
+    if (result.exponent == 0 && result.mantissa == 0) {
+        result.type = ZERO_T;
+        return result;
+    }
     if (result.type == NORMALIZED_T) {
         // 处理进位
         // 首先是进位的情况：

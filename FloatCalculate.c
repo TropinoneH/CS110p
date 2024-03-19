@@ -163,9 +163,6 @@ static Float float_add_impl(Float a, Float b) {
         return b;
     }
 
-    if (a.type != DENORMALIZED_T && b.type == DENORMALIZED_T) {
-        --a.exponent;
-    }
     if (a.exponent < b.exponent ||
         (a.exponent == b.exponent && a.mantissa < b.mantissa)) {
         // make sure A is the larger one
@@ -175,6 +172,9 @@ static Float float_add_impl(Float a, Float b) {
     }
 
     // TODO: fix the bugs in calc with denormalized float
+    if (a.type != DENORMALIZED_T && b.type == DENORMALIZED_T) {
+        --a.exponent;
+    }
     // a.mantissa > b.mantissa
     result.sign = a.sign;
     result.type = a.type;

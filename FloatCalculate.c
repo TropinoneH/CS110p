@@ -191,7 +191,8 @@ static Float float_add_impl(Float a, Float b) {
     if (!test_rightmost_all_zeros(b.mantissa, delta_exp))
         s = 1;
     // 对齐
-    b.mantissa >>= delta_exp;
+    if (delta_exp < 32) b.mantissa >>= delta_exp;
+    else b.mantissa = 0;
     b.mantissa <<= 1;
     b.mantissa += s;
     // a也需要有s位

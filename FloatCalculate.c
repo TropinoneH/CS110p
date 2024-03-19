@@ -55,7 +55,7 @@ static void build_bitstring(Float input, char *output) {
         }
         for (size_t i = 0; i < MANTISSA_BITS; ++i) {
             output[i + 1 + EXPONENT_BITS] =
-                (input.mantissa & (1u << (MANTISSA_BITS - 1 - i))) ? '1' : '0';
+                    (input.mantissa & (1u << (MANTISSA_BITS - 1 - i))) ? '1' : '0';
         }
         output[32] = '\0';
         return;
@@ -63,11 +63,11 @@ static void build_bitstring(Float input, char *output) {
         input.mantissa -= (1ull << 23);
         for (size_t i = 0; i < EXPONENT_BITS; ++i) {
             output[i + 1] =
-                (input.exponent & (1u << (EXPONENT_BITS - 1 - i))) ? '1' : '0';
+                    (input.exponent & (1u << (EXPONENT_BITS - 1 - i))) ? '1' : '0';
         }
         for (size_t i = 0; i < MANTISSA_BITS; ++i) {
             output[i + 1 + EXPONENT_BITS] =
-                (input.mantissa & (1u << (MANTISSA_BITS - 1 - i))) ? '1' : '0';
+                    (input.mantissa & (1u << (MANTISSA_BITS - 1 - i))) ? '1' : '0';
         }
         output[32] = '\0';
         return;
@@ -82,12 +82,12 @@ static Float parse_bitstring(const char *input) {
     char exp_char[9];
     strncpy(exp_char, input + SIGN_BIT, EXPONENT_BITS);
     exp_char[8] = '\0';
-    f_input.exponent = (uint32_t)strtol(exp_char, NULL, 2);
+    f_input.exponent = (uint32_t) strtol(exp_char, NULL, 2);
 
     char man_char[24];
     strncpy(man_char, input + SIGN_BIT + EXPONENT_BITS, MANTISSA_BITS);
     man_char[23] = '\0';
-    f_input.mantissa = (uint32_t)strtol(man_char, NULL, 2);
+    f_input.mantissa = (uint32_t) strtol(man_char, NULL, 2);
 
     if (test_rightmost_all_ones(f_input.exponent, EXPONENT_BITS) &&
         test_rightmost_all_zeros(f_input.mantissa, MANTISSA_BITS)) {
@@ -120,6 +120,7 @@ static Float normalize(Float result) {
         if (result.exponent >= (1ull << 8) - 1) {
             result.type = INFINITY_T;
             result.mantissa = 0;
+            return result;
         }
         // 退位
         while (result.mantissa < (1ull << 26)) {
@@ -150,12 +151,12 @@ static Float normalize(Float result) {
 static Float float_add_impl(Float a, Float b) {
     Float result;
     if (a.type == NAN_T || b.type == NAN_T) {
-        return (Float){.type = NAN_T};
+        return (Float) {.type = NAN_T};
     } else if (a.type == INFINITY_T && b.type == INFINITY_T) {
         if (a.sign == b.sign) {
             return a;
         } else {
-            return (Float){.type = NAN_T};
+            return (Float) {.type = NAN_T};
         }
     } else if (a.type == INFINITY_T || b.type == ZERO_T) {
         return a;
@@ -163,8 +164,7 @@ static Float float_add_impl(Float a, Float b) {
         return b;
     }
 
-    if (a.exponent < b.exponent ||
-        (a.exponent == b.exponent && a.mantissa < b.mantissa)) {
+    if (a.exponent < b.exponent || (a.exponent == b.exponent && a.mantissa < b.mantissa)) {
         // make sure A is the larger one
         Float temp = a;
         a = b;
@@ -196,7 +196,7 @@ static Float float_add_impl(Float a, Float b) {
     a.mantissa <<= 1;
     // second, 相加
     result.mantissa =
-        a.sign == b.sign ? a.mantissa + b.mantissa : a.mantissa - b.mantissa;
+            a.sign == b.sign ? a.mantissa + b.mantissa : a.mantissa - b.mantissa;
     // third, normalize.
     return normalize(result);
 }

@@ -51,10 +51,8 @@ main:
 
 # Just a simple function. Returns 2024.
 #
-# FIXME Fix the reported error in this function (you can delete lines
-# when necessary, as long as the function still returns 2024 in a0).
+# Fix the reported error in this function (you can delete lines when necessary, as long as the function still returns 2024 in a0).
 simple_fn:
-    addi a0, t0, 2024
     li a0, 2024
     ret
 
@@ -74,6 +72,8 @@ simple_fn:
 # missing. Another hint: what does the "s" in "s0" stand for?
 naive_mod:
     # BEGIN PROLOGUE
+    addi sp, sp, -4
+    sw s0, 0(sp)
     # END PROLOGUE
     mv s0, a0
 naive_mod_loop:
@@ -83,6 +83,8 @@ naive_mod_loop:
 naive_mod_end:
     mv a0, s0
     # BEGIN EPILOGUE
+    lw s0, 0(sp)
+    addi sp, sp, 4
     # END EPILOGUE
     ret
 
@@ -100,6 +102,8 @@ mul_arr:
     #
     addi sp, sp, -4
     sw ra, 0(sp)
+    sw s0, 4(sp)
+    sw s1, 8(sp)
     # END PROLOGUE
     mv s0, a0 # Copy start of array to saved register
     mv s1, a1 # Copy length of array to saved register
@@ -121,6 +125,8 @@ inc_arr_loop:
 inc_arr_end:
     # BEGIN EPILOGUE
     lw ra, 0(sp)
+    lw s0, 4(sp)
+    lw s1, 8(sp)
     addi sp, sp, 4
     # END EPILOGUE
     ret
@@ -135,11 +141,15 @@ inc_arr_end:
 # as appropriate.
 helper_fn:
     # BEGIN PROLOGUE
+    addi sp, sp, -4
+    sw s0, 0(sp)
     # END PROLOGUE
     lw t1, 0(a0)
     mul s0, t1, t1
     sw s0, 0(a0)
     # BEGIN EPILOGUE
+    lw s0, 0(sp)
+    addi sp, sp, 4
     # END EPILOGUE
     ret
 
@@ -163,7 +173,7 @@ check_arr_loop:
     j check_arr_loop
 check_arr_end:
     ret
-    
+
 
 # This isn't really a function - it just prints a message, then
 # terminates the program on failure. Think of it like an exception.
@@ -173,4 +183,3 @@ failure:
     ecall
     li a0, 10 # Exit ecall
     ecall
-    

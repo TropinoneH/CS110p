@@ -36,27 +36,22 @@ hanoi_tower:
     sw ra, 0(sp)
     sw a0, 4(sp)
 
-    addi t0, x0, 0
-    addi a1, x0, 0
+    addi t0, x0, 1
+    beq a0, t0, base_case
 
-hanoi_loop:
-    beq a0, t0, hanoi_end
-    beqz t0, hanoi_base
-
-    # h[i] = 2 * h[i - 1] + 1
-    add a1, a1, a1
+    addi a0, a0, -1
+    jal ra, hanoi_tower
     addi a1, a1, 1
+    jal ra, hanoi_tower
 
-    addi t0, t0, 1
+    lw ra, 0(sp)
+    lw a0, 4(sp)
+    addi sp, sp, 8
+    ret
 
-    j hanoi_loop
 
-hanoi_base:
+base_case:
     addi a1, a1, 1
-    addi t0, t0, 1
-    j hanoi_loop
-
-hanoi_end:
     lw ra, 0(sp)
     lw a0, 4(sp)
     addi sp, sp, 8

@@ -2,7 +2,7 @@
 
 - How do you pass command line arguments to a program when using gdb?
   ```shell
-  (c)gdb ./lab2 --args arg1 arg2
+  (c)gdb --args ./lab2 arg1 arg2
   ```
 - How do you set a breakpoint which only occurs when a set of conditions is true (e.g. when certain variables are a certain value)?
   ```shell

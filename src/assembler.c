@@ -6,6 +6,10 @@ uint32_t R_type(const char *line, size_t cmd_length, uint32_t func3, uint32_t fu
 
 uint32_t I_type(const char *line, size_t cmd_length, uint32_t func3, uint32_t func7, uint32_t opcode);
 
+uint32_t S_type(const char *line, size_t cmd_length, uint32_t func3);
+
+uint32_t SB_type(const char *line, size_t cmd_length, uint32_t func3);
+
 // TODO Error check: check if the command is not exist: after all if-else statement, if code is still 0, then it is an invalid command
 
 /* DO NOT MODIFY THE GIVEN API*/
@@ -140,7 +144,17 @@ int assembler(FILE *input_file, FILE *output_file) {
             uint32_t opcode = 0x13;
             uint32_t func3 = 0x7;
             code = I_type(line, strlen(command), func3, 0, opcode);
-        } else if (strcmp(command, "lui") == 0) {
+        } else if (strcmp(command, "sb") == 0) {
+            uint32_t func3 = 0x0;
+            code = S_type(line, strlen(command), func3);
+        }  else if (strcmp(command, "sh") == 0) {
+            uint32_t func3 = 0x1;
+            code = S_type(line, strlen(command), func3);
+        } else if (strcmp(command, "s2") == 0) {
+            uint32_t func3 = 0x2;
+            code = S_type(line, strlen(command), func3);
+        }
+        else if (strcmp(command, "lui") == 0) {
             char c_rd[5] = "", c_imm[10] = "";
             ch = line[strlen(command) + 1];
             while (ch != ' ' && ch != '\0') {
@@ -278,4 +292,41 @@ uint32_t I_type(const char *line, size_t cmd_length, uint32_t func3, uint32_t fu
     } else return ASSEMBLER_ERROR; // the opcode is not valid
 
     return imm << 20 | rs1 << 15 | func3 << 12 | rd << 7 | opcode;
+}
+
+uint32_t S_type(const char *line, size_t cmd_length, uint32_t func3) {
+    uint32_t opcode = 0x23;
+    uint32_t imm;
+    uint32_t rs1, rs2;
+
+    char ch = line[cmd_length + 1];
+    char c_rs2[5] = "", c_rs1[5] = "", c_imm[10] = "";
+    while (ch != ' ') {
+        c_rs2[strlen(c_rs2)] = ch;
+        ch = line[cmd_length + strlen(c_rs2) + 1];
+    }
+    ch = line[cmd_length + strlen(c_rs2) + 2];
+    while (ch != '(') {
+        c_imm[strlen(c_imm)] = ch;
+        ch = line[cmd_length + strlen(c_rs2) + strlen(c_imm) + 2];
+    }
+    ch = line[cmd_length + strlen(c_rs2) + strlen(c_imm) + 3];
+    while (ch != ')') {
+        c_rs1[strlen(c_rs1)] = ch;
+        ch = line[cmd_length + strlen(c_rs2) + strlen(c_imm) + strlen(c_rs1) + 3];
+    }
+
+    rs1 = char2addr(c_rs1);
+    rs2 = char2addr(c_rs2);
+    imm = strtol(c_imm, NULL, 0);
+
+    return (imm >> 5) << 25 | rs2 << 20 | rs1 << 15 | func3 << 12 | (imm & ((1ull << 5) - 1)) << 7 | opcode;
+}
+
+uint32_t SB_type(const char *line, size_t cmd_length, uint32_t func3) {
+    uint32_t opcode = 0x63;
+    uint32_t imm = 0;
+    uint32_t rs1 = 0, rs2 = 0;
+    return (imm & (1ull << 11)) << 31 | (imm & ((1ull << 6) - 1) << 5) << 25 | rs2 << 20 | rs1 << 15 | func3 << 12 |
+           (imm & ((1ull << 4) - 1) << 1) << 8 | (imm & (1ull << 10)) << 7 | opcode;
 }

@@ -75,6 +75,10 @@ uint32_t S_type(const char *line, size_t cmd_length, uint32_t func3);
 
 uint32_t SB_type(const char *line, size_t cmd_length, uint32_t func3);
 
+uint32_t U_type(const char *line, size_t cmd_length, uint32_t opcode);
+
+uint32_t UJ_type(const char *line, size_t cmd_length);
+
 // TODO Error check: check if the command is not exist: after all if-else statement, if code is still 0, then it is an invalid command
 
 /* DO NOT MODIFY THE GIVEN API*/
@@ -187,23 +191,13 @@ int assembler(FILE *input_file, FILE *output_file) {
             code = SB_type(line, strlen(command), 0x6);
         else if (strcmp(command, "bgeu") == 0)
             code = SB_type(line, strlen(command), 0x7);
-        else if (strcmp(command, "lui") == 0) {
-            char c_rd[5] = "", c_imm[10] = "";
-            ch = line[strlen(command) + 1];
-            while (ch != ' ' && ch != '\0') {
-                c_rd[strlen(c_rd)] = ch;
-                ch = line[strlen(c_rd) + strlen(command) + 1];
-            }
-            ch = line[strlen(c_rd) + strlen(command) + 2];
-            while (ch != ' ' && ch != '\0') {
-                c_imm[strlen(c_imm)] = ch;
-                ch = line[strlen(c_imm) + strlen(c_rd) + strlen(command) + 2];
-            }
-            uint32_t rd = char2addr(c_rd);
-            uint32_t imm = strtol(c_imm, NULL, 0);
-            uint32_t opcode = 0x37;
-            code = imm << 12 | rd << 7 | opcode;
-        }
+        else if (strcmp(command, "auipc") == 0)
+            code = U_type(line, strlen(command), 0x17);
+        else if (strcmp(command, "lui") == 0)
+            code = U_type(line, strlen(command), 0x37);
+        else if (strcmp(command, "jal") == 0)
+            code = UJ_type(line, strlen(command));
+
         if (code != ASSEMBLER_ERROR && code != 0) {
             dump_code(output_file, code);
         } else {
@@ -380,6 +374,47 @@ uint32_t SB_type(const char *line, size_t cmd_length, uint32_t func3) {
 
     uint32_t opcode = 0x63;
 
-    return (imm & (1ull << 11)) << 31 | (imm & ((1ull << 6) - 1) << 5) << 25 | rs2 << 20 | rs1 << 15 | func3 << 12 |
-           (imm & ((1ull << 4) - 1) << 1) << 8 | (imm & (1ull << 10)) << 7 | opcode;
+    return ((imm & (1ull << 12)) >> 12) << 31 | ((imm & ((1ull << 6) - 1) << 5) >> 5) << 25 | rs2 << 20 | rs1 << 15 |
+           func3 << 12 | ((imm & ((1ull << 4) - 1) << 1) >> 1) << 8 | ((imm & (1ull << 11)) >> 11) << 7 | opcode;
+}
+
+uint32_t U_type(const char *line, size_t cmd_length, uint32_t opcode) {
+    char c_rd[5] = "", c_imm[20] = "";
+    char ch = line[cmd_length + 1];
+    while (ch != ' ') {
+        c_rd[strlen(c_rd)] = ch;
+        ch = line[cmd_length + strlen(c_rd) + 1];
+    }
+    ch = line[cmd_length + strlen(c_rd) + 2];
+    while (ch != ' ' && ch != '\0') {
+        c_imm[strlen(c_imm)] = ch;
+        ch = line[cmd_length + strlen(c_rd) + strlen(c_imm) + 2];
+    }
+
+    uint32_t rd = char2addr(c_rd);
+    uint32_t imm = strtol(c_imm, NULL, 0);
+
+    return imm << 12 | rd << 7 | opcode;
+}
+
+uint32_t UJ_type(const char *line, size_t cmd_length) {
+    char c_rd[5] = "", c_imm[20] = "";
+    char ch = line[cmd_length + 1];
+    while (ch != ' ') {
+        c_rd[strlen(c_rd)] = ch;
+        ch = line[cmd_length + strlen(c_rd) + 1];
+    }
+    ch = line[cmd_length + strlen(c_rd) + 2];
+    while (ch != ' ' && ch != '\0') {
+        c_imm[strlen(c_imm)] = ch;
+        ch = line[cmd_length + strlen(c_rd) + strlen(c_imm) + 2];
+    }
+
+    uint32_t rd = char2addr(c_rd);
+    uint32_t imm = strtol(c_imm, NULL, 0);
+
+    uint32_t opcode = 0x6F;
+
+    return ((imm & (1ull << 20)) >> 20) << 31 | ((imm & ((1ull << 10) - 1) << 1) >> 1) << 21 |
+           ((imm & (1ull << 11)) >> 11) << 20 | ((imm & ((1ull << 8) - 1) << 11) >> 11) << 12 | rd << 7 | opcode;
 }

@@ -82,7 +82,7 @@ uint32_t char2addr(char *reg_name) {
     } else if (strcmp(reg_name, "t6") == 0 || strcmp(reg_name, "x31") == 0) {
         return 31;
     }
-    return 0;
+    return ASSEMBLER_ERROR;
 }
 
 /* DO NOT MODIFY CODES BELOW*/

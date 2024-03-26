@@ -97,6 +97,7 @@ int assembler(FILE *input_file, FILE *output_file) {
         char line[100] = "";
         read_line(input_file, line);
 
+        if (strlen(line) == 0) break;
         if (line[strlen(line) - 1] == ':') {
             continue;
         }
@@ -197,6 +198,125 @@ int assembler(FILE *input_file, FILE *output_file) {
             code = U_type(line, strlen(command), 0x37);
         else if (strcmp(command, "jal") == 0)
             code = UJ_type(line, strlen(command));
+        else if (strcmp(command, "beqz") == 0) {
+            uint32_t rs2 = 0;
+
+            char c_rs1[5] = "", c_imm[10] = "";
+            ch = line[strlen(command) + 1];
+            while (ch != ' ') {
+                c_rs1[strlen(c_rs1)] = ch;
+                ch = line[strlen(c_rs1) + strlen(command) + 1];
+            }
+            ch = line[strlen(c_rs1) + strlen(command) + 2];
+            while (ch != ' ' && ch != '\0') {
+                c_imm[strlen(c_imm)] = ch;
+                ch = line[strlen(c_imm) + strlen(c_rs1) + strlen(command) + 2];
+            }
+
+            uint32_t imm = strtol(c_imm, NULL, 0), rs1 = char2addr(c_rs1);
+            uint32_t opcode = 0x63, func3 = 0x0;
+            code = ((imm & (1ull << 12)) >> 12) << 31 | ((imm & ((1ull << 6) - 1) << 5) >> 5) << 25 | rs2 << 20 |
+                   rs1 << 15 | func3 << 12 | ((imm & ((1ull << 4) - 1) << 1) >> 1) << 8 |
+                   ((imm & (1ull << 11)) >> 11) << 7 | opcode;
+        } else if (strcmp(command, "bnez") == 0) {
+            uint32_t rs2 = 0;
+
+            char c_rs1[5] = "", c_imm[10] = "";
+            ch = line[strlen(command) + 1];
+            while (ch != ' ') {
+                c_rs1[strlen(c_rs1)] = ch;
+                ch = line[strlen(c_rs1) + strlen(command) + 1];
+            }
+            ch = line[strlen(c_rs1) + strlen(command) + 2];
+            while (ch != ' ' && ch != '\0') {
+                c_imm[strlen(c_imm)] = ch;
+                ch = line[strlen(c_imm) + strlen(c_rs1) + strlen(command) + 2];
+            }
+
+            uint32_t imm = strtol(c_imm, NULL, 0), rs1 = char2addr(c_rs1);
+            uint32_t opcode = 0x63, func3 = 0x1;
+            code = ((imm & (1ull << 12)) >> 12) << 31 | ((imm & ((1ull << 6) - 1) << 5) >> 5) << 25 | rs2 << 20 |
+                   rs1 << 15 | func3 << 12 | ((imm & ((1ull << 4) - 1) << 1) >> 1) << 8 |
+                   ((imm & (1ull << 11)) >> 11) << 7 | opcode;
+        } else if (strcmp(command, "j") == 0) {
+            char c_imm[20] = "";
+            ch = line[strlen(command) + 1];
+            while (ch != ' ' && ch != '\0') {
+                c_imm[strlen(c_imm)] = ch;
+                ch = line[strlen(command) + strlen(c_imm) + 1];
+            }
+
+            uint32_t rd = 0;
+            uint32_t imm = strtol(c_imm, NULL, 0);
+
+            uint32_t opcode = 0x6F;
+
+            code = ((imm & (1ull << 20)) >> 20) << 31 | ((imm & ((1ull << 10) - 1) << 1) >> 1) << 21 |
+                   ((imm & (1ull << 11)) >> 11) << 20 | ((imm & ((1ull << 8) - 1) << 11) >> 11) << 12 | rd << 7 |
+                   opcode;
+        } else if (strcmp(command, "jr") == 0) {
+            char c_rs1[5] = "", c_imm[15] = "";
+            ch = line[strlen(command) + 1];
+            while (ch != ' ' && ch != '\0') {
+                c_rs1[strlen(c_rs1)] = ch;
+                ch = line[strlen(command) + strlen(c_rs1) + 1];
+            }
+
+            uint32_t rs1 = char2addr(c_rs1);
+            uint32_t rd = 0, imm = 0;
+
+            uint32_t opcode = 0x67, func3 = 0x0;
+
+            code = imm << 20 | rs1 << 15 | func3 << 12 | rd << 7 | opcode;
+        } else if (strcmp(command, "mv") == 0) {
+            char c_rd[5] = "", c_rs1[5] = "";
+            ch = line[strlen(command) + 1];
+            while (ch != ' ') {
+                c_rd[strlen(c_rd)] = ch;
+                ch = line[strlen(command) + strlen(c_rd) + 1];
+            }
+            ch = line[strlen(c_rd) + strlen(command) + 2];
+            while (ch != ' ' && ch != '\0') {
+                c_rs1[strlen(c_rs1)] = ch;
+                ch = line[strlen(c_rs1) + strlen(c_rd) + strlen(command) + 2];
+            }
+
+            uint32_t rd = char2addr(c_rd);
+            uint32_t rs1 = char2addr(c_rs1);
+
+            uint32_t opcode = 0x13, func3 = 0x0;
+
+            code = 0 << 20 | rs1 << 15 | func3 << 12 | rd << 7 | opcode;
+        } else if (strcmp(command, "li") == 0) {
+            char c_rd[5] = "", c_imm[20] = "";
+            ch = line[strlen(command) + 1];
+            while (ch != ' ') {
+                c_rd[strlen(c_rd)] = ch;
+                ch = line[strlen(command) + strlen(c_rd) + 1];
+            }
+            ch = line[strlen(c_rd) + strlen(command) + 2];
+            while (ch != ' ' && ch != '\0') {
+                c_imm[strlen(c_imm)] = ch;
+                ch = line[strlen(command) + strlen(c_rd) + strlen(c_imm) + 2];
+            }
+
+            uint32_t rd = char2addr(c_rd);
+            uint32_t imm = strtol(c_imm, NULL, 0);
+
+            uint32_t opcode;
+            uint32_t rs1 = 0;
+            if (imm >= (1ull << 12) - 1) {
+                // split this code to two command: lui + addi
+                opcode = 0x37;
+                code = (imm >> 12) << 12 | rd << 7 | opcode;
+                dump_code(output_file, code);
+                imm &= 0xFFF;
+                rs1 = rd;
+            }
+            opcode = 0x13;
+            uint32_t func3 = 0x0;
+            code = imm << 20 | rs1 << 15 | func3 << 12 | rd << 7 | opcode;
+        }
 
         if (code != ASSEMBLER_ERROR && code != 0) {
             dump_code(output_file, code);

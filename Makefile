@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -g -std=c11 -Wpedantic -Wall -Wextra -Werror -Wvla
 MEMCHECK=valgrind --tool=memcheck --leak-check=full --track-origins=yes
 
-all: 
+all: clean
 	$(CC) $(CFLAGS) -o main main.c src/assembler.c src/util.c
 
 memcheck: all

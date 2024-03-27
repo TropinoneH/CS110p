@@ -549,7 +549,7 @@ uint32_t UJ_type(const char *line, size_t cmd_length) {
     }
 
     uint32_t rd = char2addr(c_rd);
-    uint32_t imm = strtol(c_imm, &endptr, 0);
+    uint32_t imm = strtoll(c_imm, &endptr, 0);
 
     uint32_t opcode = 0x6F;
 
@@ -557,5 +557,5 @@ uint32_t UJ_type(const char *line, size_t cmd_length) {
     if (*endptr != '\0') return ASSEMBLER_ERROR;
 
     return ((imm & (1ull << 20)) >> 20) << 31 | ((imm & ((1ull << 10) - 1) << 1) >> 1) << 21 |
-           ((imm & (1ull << 11)) >> 11) << 20 | ((imm & ((1ull << 8) - 1) << 11) >> 11) << 12 | rd << 7 | opcode;
+           ((imm & (1ull << 11)) >> 11) << 20 | ((imm & ((1ull << 8) - 1) << 12) >> 12) << 12 | rd << 7 | opcode;
 }

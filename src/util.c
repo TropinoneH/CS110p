@@ -299,7 +299,7 @@ uint32_t U_type(const char *line, size_t cmd_length, uint32_t opcode) {
 
     if (rd == (uint32_t) ASSEMBLER_ERROR) return ASSEMBLER_ERROR;
     if (*endptr != '\0') return ASSEMBLER_ERROR;
-    if (imm > 1048576) return ASSEMBLER_ERROR;
+    if (imm > 1048575) return ASSEMBLER_ERROR;
 
     return imm << 12 | rd << 7 | opcode;
 }

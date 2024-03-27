@@ -276,7 +276,7 @@ int assembler(FILE *input_file, FILE *output_file) {
 
             uint32_t opcode = 0x13, func3 = 0x0;
 
-            code = 0 << 20 | rs1 << 15 | func3 << 12 | rd << 7 | opcode;
+            code = rs1 << 15 | func3 << 12 | rd << 7 | opcode;
             if (rs1 == (uint32_t) ASSEMBLER_ERROR || rd == (uint32_t) ASSEMBLER_ERROR)
                 code = ASSEMBLER_ERROR;
         } else if (strcmp(command, "li") == 0) {
@@ -301,7 +301,7 @@ int assembler(FILE *input_file, FILE *output_file) {
             if (imm >= (1ull << 12) - 1) {
                 // split this code to two command: lui + addi
                 opcode = 0x37;
-                code = (imm >> 12) << 12 | rd << 7 | opcode;
+                code = ((imm >> 12) + ((imm & (1ull << 11)) ? 1 : 0)) << 12 | rd << 7 | opcode;
                 if (rd != (uint32_t) ASSEMBLER_ERROR || *endptr == '\0') dump_code(output_file, code);
                 imm &= 0xFFF;
                 rs1 = rd;

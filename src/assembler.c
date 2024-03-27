@@ -367,6 +367,7 @@ uint32_t I_type(const char *line, size_t cmd_length, uint32_t func3, uint32_t fu
         imm = 0x0;
         rs1 = 0x0;
         rd = 0x0;
+        endptr = c_rs1;
     } else if (opcode == 0x03) {
         while (ch != ' ') {
             c_rd[strlen(c_rd)] = ch;

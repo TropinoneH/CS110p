@@ -213,7 +213,7 @@ int assembler(FILE *input_file, FILE *output_file) {
                    rs1 << 15 | func3 << 12 | ((imm & ((1ull << 4) - 1) << 1) >> 1) << 8 |
                    ((imm & (1ull << 11)) >> 11) << 7 | opcode;
 
-            if (rs1 == ASSEMBLER_ERROR || *endptr != '\0') code = ASSEMBLER_ERROR;
+            if (rs1 == (uint32_t) ASSEMBLER_ERROR || *endptr != '\0') code = ASSEMBLER_ERROR;
         } else if (strcmp(command, "bnez") == 0) {
             char *endptr;
             char c_rs1[5] = "", c_imm[10] = "";
@@ -235,7 +235,7 @@ int assembler(FILE *input_file, FILE *output_file) {
             code = ((imm & (1ull << 12)) >> 12) << 31 | ((imm & ((1ull << 6) - 1) << 5) >> 5) << 25 | rs2 << 20 |
                    rs1 << 15 | func3 << 12 | ((imm & ((1ull << 4) - 1) << 1) >> 1) << 8 |
                    ((imm & (1ull << 11)) >> 11) << 7 | opcode;
-            if (rs1 == ASSEMBLER_ERROR || *endptr != '\0') code = ASSEMBLER_ERROR;
+            if (rs1 == (uint32_t) ASSEMBLER_ERROR || *endptr != '\0') code = ASSEMBLER_ERROR;
         } else if (strcmp(command, "j") == 0) {
             char *endptr;
             char c_imm[20] = "";
@@ -271,7 +271,7 @@ int assembler(FILE *input_file, FILE *output_file) {
             uint32_t opcode = 0x67, func3 = 0x0;
 
             code = imm << 20 | rs1 << 15 | func3 << 12 | rd << 7 | opcode;
-            if (rs1 == ASSEMBLER_ERROR) code = ASSEMBLER_ERROR;
+            if (rs1 == (uint32_t) ASSEMBLER_ERROR) code = ASSEMBLER_ERROR;
         } else if (strcmp(command, "mv") == 0) {
             char c_rd[5] = "", c_rs1[5] = "";
             ch = line[strlen(command) + 1];
@@ -291,7 +291,8 @@ int assembler(FILE *input_file, FILE *output_file) {
             uint32_t opcode = 0x13, func3 = 0x0;
 
             code = 0 << 20 | rs1 << 15 | func3 << 12 | rd << 7 | opcode;
-            if (rs1 == ASSEMBLER_ERROR || rd == ASSEMBLER_ERROR) code = ASSEMBLER_ERROR;
+            if (rs1 == (uint32_t) ASSEMBLER_ERROR || rd == (uint32_t) ASSEMBLER_ERROR)
+                code = ASSEMBLER_ERROR;
         } else if (strcmp(command, "li") == 0) {
             char *endptr;
             char c_rd[5] = "", c_imm[20] = "";
@@ -315,14 +316,15 @@ int assembler(FILE *input_file, FILE *output_file) {
                 // split this code to two command: lui + addi
                 opcode = 0x37;
                 code = (imm >> 12) << 12 | rd << 7 | opcode;
-                if (rd != ASSEMBLER_ERROR || *endptr == '\0') dump_code(output_file, code);
+                if (rd != (uint32_t) ASSEMBLER_ERROR || *endptr == '\0') dump_code(output_file, code);
                 imm &= 0xFFF;
                 rs1 = rd;
             }
             opcode = 0x13;
             uint32_t func3 = 0x0;
             code = imm << 20 | rs1 << 15 | func3 << 12 | rd << 7 | opcode;
-            if (rs1 == ASSEMBLER_ERROR || rd == ASSEMBLER_ERROR || *endptr != '\0') code = ASSEMBLER_ERROR;
+            if (rs1 == (uint32_t) ASSEMBLER_ERROR || rd == (uint32_t) ASSEMBLER_ERROR || *endptr != '\0')
+                code = ASSEMBLER_ERROR;
         }
 
         // Error check: check if the command is not exist: after all if-else statement, if code is still 0, then it is an invalid command

@@ -253,7 +253,7 @@ int assembler(FILE *input_file, FILE *output_file) {
                    ((imm & (1ull << 11)) >> 11) << 20 | ((imm & ((1ull << 8) - 1) << 11) >> 11) << 12 | rd << 7 |
                    opcode;
         } else if (strcmp(command, "jr") == 0) {
-            char c_rs1[5] = "", c_imm[15] = "";
+            char c_rs1[5] = "";
             ch = line[strlen(command) + 1];
             while (ch != ' ' && ch != '\0') {
                 c_rs1[strlen(c_rs1)] = ch;
@@ -317,7 +317,7 @@ int assembler(FILE *input_file, FILE *output_file) {
         }
 
         // Error check: check if the command is not exist: after all if-else statement, if code is still 0, then it is an invalid command
-        if (code != ASSEMBLER_ERROR && code != 0) {
+        if (code != (uint32_t) ASSEMBLER_ERROR && code != 0) {
             dump_code(output_file, code);
         } else {
             dump_error_information(output_file);
@@ -353,7 +353,7 @@ uint32_t R_type(const char *line, size_t cmd_length, uint32_t func3, uint32_t fu
     uint32_t rs1 = char2addr(c_rs1);
     uint32_t rs2 = char2addr(c_rs2);
 
-    if (rd == ASSEMBLER_ERROR || rs1 == ASSEMBLER_ERROR || rs2 == ASSEMBLER_ERROR) return ASSEMBLER_ERROR;
+    if (rd == (uint32_t) ASSEMBLER_ERROR || rs1 == (uint32_t) ASSEMBLER_ERROR || rs2 == (uint32_t) ASSEMBLER_ERROR) return ASSEMBLER_ERROR;
 
     uint32_t opcode = 0x33;
 
@@ -439,7 +439,7 @@ uint32_t I_type(const char *line, size_t cmd_length, uint32_t func3, uint32_t fu
         imm = strtol(c_imm, &endptr, 0);
     } else return ASSEMBLER_ERROR; // the opcode is not valid
 
-    if (rd == ASSEMBLER_ERROR || rs1 == ASSEMBLER_ERROR) return ASSEMBLER_ERROR;
+    if (rd == (uint32_t) ASSEMBLER_ERROR || rs1 == (uint32_t) ASSEMBLER_ERROR) return ASSEMBLER_ERROR;
     if (imm >= (1ull << 12)) return ASSEMBLER_ERROR;
     if (*endptr != '\0') return ASSEMBLER_ERROR;
 
@@ -473,7 +473,7 @@ uint32_t S_type(const char *line, size_t cmd_length, uint32_t func3) {
     rs2 = char2addr(c_rs2);
     imm = strtol(c_imm, &endptr, 0);
 
-    if (rs1 == ASSEMBLER_ERROR || rs2 == ASSEMBLER_ERROR) return ASSEMBLER_ERROR;
+    if (rs1 == (uint32_t) ASSEMBLER_ERROR || rs2 == (uint32_t) ASSEMBLER_ERROR) return ASSEMBLER_ERROR;
     if (*endptr != '\0') return ASSEMBLER_ERROR;
 
     return (imm >> 5) << 25 | rs2 << 20 | rs1 << 15 | func3 << 12 | (imm & ((1ull << 5) - 1)) << 7 | opcode;
@@ -505,7 +505,7 @@ uint32_t SB_type(const char *line, size_t cmd_length, uint32_t func3) {
 
     uint32_t opcode = 0x63;
 
-    if (rs1 == ASSEMBLER_ERROR || rs2 == ASSEMBLER_ERROR) return ASSEMBLER_ERROR;
+    if (rs1 == (uint32_t) ASSEMBLER_ERROR || rs2 == (uint32_t) ASSEMBLER_ERROR) return ASSEMBLER_ERROR;
     if (*endptr != '\0') return ASSEMBLER_ERROR;
 
     return ((imm & (1ull << 12)) >> 12) << 31 | ((imm & ((1ull << 6) - 1) << 5) >> 5) << 25 | rs2 << 20 | rs1 << 15 |
@@ -530,7 +530,7 @@ uint32_t U_type(const char *line, size_t cmd_length, uint32_t opcode) {
     uint32_t rd = char2addr(c_rd);
     uint32_t imm = strtol(c_imm, &endptr, 0);
 
-    if (rd == ASSEMBLER_ERROR) return ASSEMBLER_ERROR;
+    if (rd == (uint32_t) ASSEMBLER_ERROR) return ASSEMBLER_ERROR;
     if (*endptr != '\0') return ASSEMBLER_ERROR;
 
     // FIXME: imm & 0xFFFFF000
@@ -557,7 +557,7 @@ uint32_t UJ_type(const char *line, size_t cmd_length) {
 
     uint32_t opcode = 0x6F;
 
-    if (rd == ASSEMBLER_ERROR) return ASSEMBLER_ERROR;
+    if (rd == (uint32_t) ASSEMBLER_ERROR) return ASSEMBLER_ERROR;
     if (*endptr != '\0') return ASSEMBLER_ERROR;
 
     return ((imm & (1ull << 20)) >> 20) << 31 | ((imm & ((1ull << 10) - 1) << 1) >> 1) << 21 |

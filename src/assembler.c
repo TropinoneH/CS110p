@@ -318,7 +318,7 @@ int assembler(FILE *input_file, FILE *output_file) {
             dump_code(output_file, code);
         } else {
             dump_error_information(output_file);
-            ret = 1;
+            ret = ASSEMBLER_ERROR;
         }
     }
     return ret;

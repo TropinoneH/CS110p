@@ -192,8 +192,6 @@ int assembler(FILE *input_file, FILE *output_file) {
         else if (strcmp(command, "jal") == 0)
             code = UJ_type(line, strlen(command));
         else if (strcmp(command, "beqz") == 0) {
-            uint32_t rs2 = 0;
-
             char c_rs1[5] = "", c_imm[10] = "";
             ch = line[strlen(command) + 1];
             while (ch != ' ') {
@@ -207,13 +205,13 @@ int assembler(FILE *input_file, FILE *output_file) {
             }
 
             uint32_t imm = strtol(c_imm, NULL, 0), rs1 = char2addr(c_rs1);
+            uint32_t rs2 = 0;
+
             uint32_t opcode = 0x63, func3 = 0x0;
             code = ((imm & (1ull << 12)) >> 12) << 31 | ((imm & ((1ull << 6) - 1) << 5) >> 5) << 25 | rs2 << 20 |
                    rs1 << 15 | func3 << 12 | ((imm & ((1ull << 4) - 1) << 1) >> 1) << 8 |
                    ((imm & (1ull << 11)) >> 11) << 7 | opcode;
         } else if (strcmp(command, "bnez") == 0) {
-            uint32_t rs2 = 0;
-
             char c_rs1[5] = "", c_imm[10] = "";
             ch = line[strlen(command) + 1];
             while (ch != ' ') {
@@ -227,6 +225,8 @@ int assembler(FILE *input_file, FILE *output_file) {
             }
 
             uint32_t imm = strtol(c_imm, NULL, 0), rs1 = char2addr(c_rs1);
+            uint32_t rs2 = 0;
+
             uint32_t opcode = 0x63, func3 = 0x1;
             code = ((imm & (1ull << 12)) >> 12) << 31 | ((imm & ((1ull << 6) - 1) << 5) >> 5) << 25 | rs2 << 20 |
                    rs1 << 15 | func3 << 12 | ((imm & ((1ull << 4) - 1) << 1) >> 1) << 8 |
@@ -245,7 +245,7 @@ int assembler(FILE *input_file, FILE *output_file) {
             uint32_t opcode = 0x6F;
 
             code = ((imm & (1ull << 20)) >> 20) << 31 | ((imm & ((1ull << 10) - 1) << 1) >> 1) << 21 |
-                   ((imm & (1ull << 11)) >> 11) << 20 | ((imm & ((1ull << 8) - 1) << 11) >> 11) << 12 | rd << 7 |
+                   ((imm & (1ull << 11)) >> 11) << 20 | ((imm & ((1ull << 8) - 1) << 12) >> 12) << 12 | rd << 7 |
                    opcode;
         } else if (strcmp(command, "jr") == 0) {
             char c_rs1[5] = "";
@@ -348,7 +348,9 @@ uint32_t R_type(const char *line, size_t cmd_length, uint32_t func3, uint32_t fu
     uint32_t rs1 = char2addr(c_rs1);
     uint32_t rs2 = char2addr(c_rs2);
 
-    if (rd == (uint32_t) ASSEMBLER_ERROR || rs1 == (uint32_t) ASSEMBLER_ERROR || rs2 == (uint32_t) ASSEMBLER_ERROR) return ASSEMBLER_ERROR;
+    if (rd == (uint32_t) ASSEMBLER_ERROR || rs1 == (uint32_t) ASSEMBLER_ERROR ||
+        rs2 == (uint32_t) ASSEMBLER_ERROR)
+        return ASSEMBLER_ERROR;
 
     uint32_t opcode = 0x33;
 
@@ -529,7 +531,6 @@ uint32_t U_type(const char *line, size_t cmd_length, uint32_t opcode) {
     if (rd == (uint32_t) ASSEMBLER_ERROR) return ASSEMBLER_ERROR;
     if (*endptr != '\0') return ASSEMBLER_ERROR;
 
-    // FIXME: imm & 0xFFFFF000
     return imm << 12 | rd << 7 | opcode;
 }
 

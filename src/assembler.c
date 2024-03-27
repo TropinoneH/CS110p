@@ -82,11 +82,6 @@ uint32_t UJ_type(const char *line, size_t cmd_length);
 /* DO NOT MODIFY THE GIVEN API*/
 int assembler(FILE *input_file, FILE *output_file) {
     /*YOUR CODE HERE*/
-    if (output_file == NULL) {
-        dump_error_information(output_file);
-        return 1;
-    }
-
     find_labels(input_file);
 
     uint32_t line_number = 0;
@@ -328,7 +323,7 @@ int assembler(FILE *input_file, FILE *output_file) {
 
 // Error check: check if the register name is valid (char2addr returns ASSEMBLER_ERROR)
 // TODO Error check: check if the imm is out of range: if the imm is out of range, then return ASSEMBLER_ERROR
-// Error check: check if the imm is not a number: if the imm is not a number, then return ASSEMBLER_ERROR
+// TODO Error check: check if the imm is not a number: if the imm is not a number, then return ASSEMBLER_ERROR
 
 uint32_t R_type(const char *line, size_t cmd_length, uint32_t func3, uint32_t func7) {
     char c_rd[5] = "", c_rs1[5] = "", c_rs2[5] = "";
@@ -440,7 +435,7 @@ uint32_t I_type(const char *line, size_t cmd_length, uint32_t func3, uint32_t fu
     } else return ASSEMBLER_ERROR; // the opcode is not valid
 
     if (rd == (uint32_t) ASSEMBLER_ERROR || rs1 == (uint32_t) ASSEMBLER_ERROR) return ASSEMBLER_ERROR;
-    if (imm >= (1ull << 12)) return ASSEMBLER_ERROR;
+//    if (imm >= (1ull << 12)) return ASSEMBLER_ERROR;
     if (*endptr != '\0') return ASSEMBLER_ERROR;
 
     return imm << 20 | rs1 << 15 | func3 << 12 | rd << 7 | opcode;

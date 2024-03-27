@@ -84,8 +84,6 @@ int assembler(FILE *input_file, FILE *output_file) {
     /*YOUR CODE HERE*/
     find_labels(input_file);
 
-    uint32_t line_number = 0;
-
     while (!feof(input_file)) {
         char line[100] = "";
         read_line(input_file, line);
@@ -94,8 +92,6 @@ int assembler(FILE *input_file, FILE *output_file) {
         if (line[strlen(line) - 1] == ':') {
             continue;
         }
-
-        ++line_number;
 
         char command[10] = "";
         char ch = line[0];
@@ -255,7 +251,7 @@ int assembler(FILE *input_file, FILE *output_file) {
                    ((imm & (1ull << 11)) >> 11) << 20 | ((imm & ((1ull << 8) - 1) << 12) >> 12) << 12 | rd << 7 |
                    opcode;
 
-            if (i64_imm <= -1048576 || i64_imm >= 1048575) code = ASSEMBLER_ERROR;
+            if (i64_imm < -1048576 || i64_imm > 1048575) code = ASSEMBLER_ERROR;
             if (*endptr != '\0') code = ASSEMBLER_ERROR;
         } else if (strcmp(command, "jr") == 0) {
             char c_rs1[5] = "";
@@ -454,7 +450,7 @@ uint32_t I_type(const char *line, size_t cmd_length, uint32_t func3, uint32_t fu
 
     if (rd == (uint32_t) ASSEMBLER_ERROR || rs1 == (uint32_t) ASSEMBLER_ERROR) return ASSEMBLER_ERROR;
     if (*endptr != '\0') return ASSEMBLER_ERROR;
-    if (i64_imm >= 2047 || i64_imm <= -2048) return ASSEMBLER_ERROR;
+    if (i64_imm > 2047 || i64_imm < -2048) return ASSEMBLER_ERROR;
 
     uint32_t imm = (uint32_t) i64_imm;
     return imm << 20 | rs1 << 15 | func3 << 12 | rd << 7 | opcode;
@@ -489,7 +485,7 @@ uint32_t S_type(const char *line, size_t cmd_length, uint32_t func3) {
 
     if (rs1 == (uint32_t) ASSEMBLER_ERROR || rs2 == (uint32_t) ASSEMBLER_ERROR) return ASSEMBLER_ERROR;
     if (*endptr != '\0') return ASSEMBLER_ERROR;
-    if (i64_imm >= 2047 || i64_imm <= -2048) return ASSEMBLER_ERROR;
+    if (i64_imm > 2047 || i64_imm < -2048) return ASSEMBLER_ERROR;
 
     uint32_t imm = (uint32_t) i64_imm;
     return (imm >> 5) << 25 | rs2 << 20 | rs1 << 15 | func3 << 12 | (i64_imm & ((1ull << 5) - 1)) << 7 | opcode;
@@ -523,7 +519,7 @@ uint32_t SB_type(const char *line, size_t cmd_length, uint32_t func3) {
 
     if (rs1 == (uint32_t) ASSEMBLER_ERROR || rs2 == (uint32_t) ASSEMBLER_ERROR) return ASSEMBLER_ERROR;
     if (*endptr != '\0') return ASSEMBLER_ERROR;
-    if (i64_imm >= 4095 || i64_imm <= -4096) return ASSEMBLER_ERROR;
+    if (i64_imm > 4095 || i64_imm < -4096) return ASSEMBLER_ERROR;
 
     uint32_t imm = i64_imm;
     return ((imm & (1ull << 12)) >> 12) << 31 | ((imm & ((1ull << 6) - 1) << 5) >> 5) << 25 | rs2 << 20 | rs1 << 15 |
@@ -550,7 +546,7 @@ uint32_t U_type(const char *line, size_t cmd_length, uint32_t opcode) {
 
     if (rd == (uint32_t) ASSEMBLER_ERROR) return ASSEMBLER_ERROR;
     if (*endptr != '\0') return ASSEMBLER_ERROR;
-    if (imm >= 1048575) return ASSEMBLER_ERROR;
+    if (imm > 1048575) return ASSEMBLER_ERROR;
 
     return imm << 12 | rd << 7 | opcode;
 }
@@ -577,7 +573,7 @@ uint32_t UJ_type(const char *line, size_t cmd_length) {
 
     if (rd == (uint32_t) ASSEMBLER_ERROR) return ASSEMBLER_ERROR;
     if (*endptr != '\0') return ASSEMBLER_ERROR;
-    if (i64_imm <= -1048576 || i64_imm >= 1048575) return ASSEMBLER_ERROR;
+    if (i64_imm < -1048576 || i64_imm > 1048575) return ASSEMBLER_ERROR;
 
     uint32_t imm = i64_imm;
     return ((imm & (1ull << 20)) >> 20) << 31 | ((imm & ((1ull << 10) - 1) << 1) >> 1) << 21 |

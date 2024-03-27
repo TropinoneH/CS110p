@@ -82,6 +82,8 @@ uint32_t UJ_type(const char *line, size_t cmd_length);
 /* DO NOT MODIFY THE GIVEN API*/
 int assembler(FILE *input_file, FILE *output_file) {
     /*YOUR CODE HERE*/
+    int ret = 0;
+
     find_labels(input_file);
 
     while (!feof(input_file)) {
@@ -332,9 +334,10 @@ int assembler(FILE *input_file, FILE *output_file) {
             dump_code(output_file, code);
         } else {
             dump_error_information(output_file);
+            ret = 1;
         }
     }
-    return 0;
+    return ret;
 }
 
 // Error check: check if the register name is valid (char2addr returns ASSEMBLER_ERROR)

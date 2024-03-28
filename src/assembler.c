@@ -269,17 +269,21 @@ int assembler(FILE *input_file, FILE *output_file) {
             }
 
             uint32_t rd = char2addr(c_rd);
-            uint32_t imm = strtol(c_imm, &endptr, 0);
+            int64_t i64_imm = strtol(c_imm, &endptr, 0);
+            uint32_t imm;
 
             uint32_t opcode;
             uint32_t rs1 = 0;
-            if (imm >= (1ull << 12) - 1) {
+            if (i64_imm > 2047 || i64_imm < -2048) {
                 // split this code to two command: lui + addi
                 opcode = 0x37;
+                imm = (uint32_t) i64_imm;
                 code = ((imm >> 12) + ((imm & (1ull << 11)) ? 1 : 0)) << 12 | rd << 7 | opcode;
                 if (rd != (uint32_t) ASSEMBLER_ERROR || *endptr == '\0') dump_code(output_file, code);
                 imm &= 0xFFF;
                 rs1 = rd;
+            } else {
+                imm = (uint32_t) i64_imm;
             }
             opcode = 0x13;
             uint32_t func3 = 0x0;

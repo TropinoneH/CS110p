@@ -74,7 +74,7 @@ int assembler(FILE *input_file, FILE *output_file) {
         char line[100] = "";
         read_line(input_file, line);
 
-        if (strlen(line) == 0) break;
+        if (strlen(line) <= 2) break;
         if (line[strlen(line) - 1] == ':') {
             continue;
         }

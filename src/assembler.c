@@ -74,7 +74,7 @@ int assembler(FILE *input_file, FILE *output_file) {
         char line[100] = "";
         read_line(input_file, line);
 
-        if (strlen(line) <= 2) break;
+        if (strlen(line) == 0) break;
         if (line[strlen(line) - 1] == ':') {
             continue;
         }
@@ -174,7 +174,6 @@ int assembler(FILE *input_file, FILE *output_file) {
         else if (strcmp(command, "jal") == 0)
             code = UJ_type(line, strlen(command));
         else if (strcmp(command, "beqz") == 0) {
-            char *endptr;
             char c_rs1[5] = "", c_imm[10] = "";
             ch = line[strlen(command) + 1];
             while (ch != ' ') {
@@ -186,20 +185,13 @@ int assembler(FILE *input_file, FILE *output_file) {
                 c_imm[strlen(c_imm)] = ch;
                 ch = line[strlen(c_imm) + strlen(c_rs1) + strlen(command) + 2];
             }
-
-            int64_t i64_imm = strtol(c_imm, &endptr, 0), rs1 = char2addr(c_rs1);
-            uint32_t imm = (uint32_t) i64_imm;
-            uint32_t rs2 = 0;
-
-            uint32_t opcode = 0x63, func3 = 0x0;
-            code = ((imm & (1ull << 12)) >> 12) << 31 | ((imm & ((1ull << 6) - 1) << 5) >> 5) << 25 | rs2 << 20 |
-                   rs1 << 15 | func3 << 12 | ((imm & ((1ull << 4) - 1) << 1) >> 1) << 8 |
-                   ((imm & (1ull << 11)) >> 11) << 7 | opcode;
-
-            if (rs1 == (uint32_t) ASSEMBLER_ERROR || *endptr != '\0') code = ASSEMBLER_ERROR;
-            if (i64_imm > 4095 || i64_imm < -4096) code = ASSEMBLER_ERROR;
+            char new_line[100] = "";
+            strcat(new_line, "beq ");
+            strcat(new_line, c_rs1);
+            strcat(new_line, " x0 ");
+            strcat(new_line, c_imm);
+            code = SB_type(new_line, strlen("beq"), 0x0);
         } else if (strcmp(command, "bnez") == 0) {
-            char *endptr;
             char c_rs1[5] = "", c_imm[10] = "";
             ch = line[strlen(command) + 1];
             while (ch != ' ') {
@@ -211,19 +203,13 @@ int assembler(FILE *input_file, FILE *output_file) {
                 c_imm[strlen(c_imm)] = ch;
                 ch = line[strlen(c_imm) + strlen(c_rs1) + strlen(command) + 2];
             }
-
-            int64_t i64_imm = strtol(c_imm, &endptr, 0), rs1 = char2addr(c_rs1);
-            uint32_t imm = (uint32_t) i64_imm;
-            uint32_t rs2 = 0;
-
-            uint32_t opcode = 0x63, func3 = 0x1;
-            code = ((imm & (1ull << 12)) >> 12) << 31 | ((imm & ((1ull << 6) - 1) << 5) >> 5) << 25 | rs2 << 20 |
-                   rs1 << 15 | func3 << 12 | ((imm & ((1ull << 4) - 1) << 1) >> 1) << 8 |
-                   ((imm & (1ull << 11)) >> 11) << 7 | opcode;
-            if (rs1 == (uint32_t) ASSEMBLER_ERROR || *endptr != '\0') code = ASSEMBLER_ERROR;
-            if (i64_imm > 4095 || i64_imm < -4096)code = ASSEMBLER_ERROR;
+            char new_line[100] = "";
+            strcat(new_line, "bne ");
+            strcat(new_line, c_rs1);
+            strcat(new_line, " x0 ");
+            strcat(new_line, c_imm);
+            code = SB_type(new_line, strlen("bne"), 0x1);
         } else if (strcmp(command, "j") == 0) {
-            char *endptr;
             char c_imm[20] = "";
             ch = line[strlen(command) + 1];
             while (ch != ' ' && ch != '\0') {
@@ -231,18 +217,10 @@ int assembler(FILE *input_file, FILE *output_file) {
                 ch = line[strlen(command) + strlen(c_imm) + 1];
             }
 
-            uint32_t rd = 0;
-            int64_t i64_imm = strtol(c_imm, &endptr, 0);
-            uint32_t imm = (uint32_t) i64_imm;
-
-            uint32_t opcode = 0x6F;
-
-            code = ((imm & (1ull << 20)) >> 20) << 31 | ((imm & ((1ull << 10) - 1) << 1) >> 1) << 21 |
-                   ((imm & (1ull << 11)) >> 11) << 20 | ((imm & ((1ull << 8) - 1) << 12) >> 12) << 12 | rd << 7 |
-                   opcode;
-
-            if (i64_imm < -1048576 || i64_imm > 1048575) code = ASSEMBLER_ERROR;
-            if (*endptr != '\0') code = ASSEMBLER_ERROR;
+            char new_line[100] = "";
+            strcat(new_line, "jal x0 ");
+            strcat(new_line, c_imm);
+            code = UJ_type(new_line, strlen("jal"));
         } else if (strcmp(command, "jr") == 0) {
             char c_rs1[5] = "";
             ch = line[strlen(command) + 1];
@@ -251,13 +229,11 @@ int assembler(FILE *input_file, FILE *output_file) {
                 ch = line[strlen(command) + strlen(c_rs1) + 1];
             }
 
-            uint32_t rs1 = char2addr(c_rs1);
-            uint32_t rd = 0, imm = 0;
-
-            uint32_t opcode = 0x67, func3 = 0x0;
-
-            code = imm << 20 | rs1 << 15 | func3 << 12 | rd << 7 | opcode;
-            if (rs1 == (uint32_t) ASSEMBLER_ERROR) code = ASSEMBLER_ERROR;
+            char new_line[100] = "";
+            strcat(new_line, "jalr x0 ");
+            strcat(new_line, c_rs1);
+            strcat(new_line, " 0");
+            code = I_type(new_line, strlen("jalr"), 0x0, 0, 0x67);
         } else if (strcmp(command, "mv") == 0) {
             char c_rd[5] = "", c_rs1[5] = "";
             ch = line[strlen(command) + 1];
@@ -271,14 +247,13 @@ int assembler(FILE *input_file, FILE *output_file) {
                 ch = line[strlen(c_rs1) + strlen(c_rd) + strlen(command) + 2];
             }
 
-            uint32_t rd = char2addr(c_rd);
-            uint32_t rs1 = char2addr(c_rs1);
-
-            uint32_t opcode = 0x13, func3 = 0x0;
-
-            code = rs1 << 15 | func3 << 12 | rd << 7 | opcode;
-            if (rs1 == (uint32_t) ASSEMBLER_ERROR || rd == (uint32_t) ASSEMBLER_ERROR)
-                code = ASSEMBLER_ERROR;
+            char new_line[100] = "";
+            strcat(new_line, "addi ");
+            strcat(new_line, c_rd);
+            strcat(new_line, " ");
+            strcat(new_line, c_rs1);
+            strcat(new_line, " 0");
+            code = I_type(new_line, strlen("addi"), 0x0, 0, 0x13);
         } else if (strcmp(command, "li") == 0) {
             char *endptr;
             char c_rd[5] = "", c_imm[20] = "";

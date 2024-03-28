@@ -6,7 +6,7 @@ sb x0 2048(x0)
 sb x0 -2049(x0)
 beq x0 x0 4096
 beq x0 x0 -4097
-auipc x0 1048575
+auipc x0 1048576
 auipc x0 -1
 jal x0 1048576
 jal x0 -1048577

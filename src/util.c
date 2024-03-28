@@ -174,7 +174,7 @@ uint32_t I_type(const char *line, size_t cmd_length, uint32_t func3, uint32_t fu
         // if func3 is 0x5, then it is srli or srai; if func3 is 0x1, then it is slli
         if (func3 == 0x5 || func3 == 0x1) {
             // judge the range of i64_imm
-            if (i64_imm >= (2 << 5)) {
+            if (i64_imm >= (2 << 4) || i64_imm < 0) {
                 return ASSEMBLER_ERROR;
             }
         }

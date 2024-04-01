@@ -7,14 +7,14 @@
 #include <stdlib.h>
 
 typedef struct hash_chaining {
-  uint32_t size;
-  struct list_node **slots;
-  hash_parameters parameters;
+    uint32_t size;
+    struct list_node **slots;
+    hash_parameters parameters;
 } hash_chaining;
 
 typedef struct list_node {
-  uint32_t key;
-  struct list_node *next;
+    uint32_t key;
+    struct list_node *next;
 } list_node;
 
 /**

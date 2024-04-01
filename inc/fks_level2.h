@@ -10,9 +10,9 @@
 #define FKS_LEVEL2_EMPTY UINT32_MAX
 
 typedef struct fks_level2 {
-  uint32_t size;
-  uint32_t *slots;
-  hash_parameters parameters;
+    uint32_t size;
+    uint32_t *slots;
+    hash_parameters parameters;
 } fks_level2;
 
 /**

@@ -9,9 +9,9 @@
 #include <stdlib.h>
 
 typedef struct fks_level1 {
-  uint32_t size;
-  fks_level2 **level2_tables;
-  hash_parameters parameters;
+    uint32_t size;
+    fks_level2 **level2_tables;
+    hash_parameters parameters;
 } fks_level1;
 
 /**

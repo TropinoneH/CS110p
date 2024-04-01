@@ -1,5 +1,6 @@
 #ifndef HASH_FUNC_H
 #define HASH_FUNC_H
+
 #include "hash_parameters.h"
 #include <stdint.h>
 

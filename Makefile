@@ -19,29 +19,31 @@ SHARED_BIN = $(BUILD_DIR)/test_fks_shared
 
 $(BUILD_DIR)/%.o-static: %.c
 	mkdir -p $(dir $@)
-	@echo TODO
+	$(CC) $(CFLAGS) -c $< -o $@
 
 $(BUILD_DIR)/%.o-shared: %.c
 	mkdir -p $(dir $@)
-	@echo TODO
+	$(CC) $(CFLAGS) -fPIC -c $< -o $@
 
-$(STATIC_LIB): $(STATIC_OBJS)	
+$(STATIC_LIB): $(STATIC_OBJS)
 	mkdir -p $(dir $@)
-	@echo TODO
+	ar rcs $@ $(STATIC_OBJS)
 
 $(SHARED_LIB): $(SHARED_OBJS)
 	mkdir -p $(dir $@)
-	@echo TODO
+	$(CC) -shared -o $@ $(SHARED_OBJS)
 
 test_fks: test_fks.c $(SRC)
 	mkdir -p $(BUILD_DIR)
 	$(CC) -o $(BIN) $(CFLAGS) $^  
 
 test_fks_static: test_fks.c $(STATIC_LIB)
-	@echo TODO
+	mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) -o $(STATIC_BIN) test_fks.c -L$(BUILD_DIR) -lhash
 
 test_fks_shared: test_fks.c $(SHARED_LIB)
-	@echo TODO
+	mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) -o $(SHARED_BIN) test_fks.c -L$(BUILD_DIR) -lhash -Wl,-rpath,$(BUILD_DIR)
 
 clean: 
 	-rm -rf $(BUILD_DIR)

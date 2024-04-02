@@ -20,7 +20,7 @@ void hash_chaining_insert(hash_chaining *table, uint32_t key) {
         return;
     }
     while (cur->next) {
-        if (cur->key == key) return;
+//        if (cur->key == key) return;
         cur = cur->next;
     }
     cur->next = node;

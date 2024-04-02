@@ -16,6 +16,7 @@ fks_level2 *fks_level2_build(list_node *head, uint32_t size, hash_parameters par
     if (size == 0) {
         return NULL;
     }
+    size *= size;
     bool no_conflict = false;
     list_node *current;
 

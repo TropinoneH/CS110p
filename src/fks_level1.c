@@ -29,6 +29,7 @@ bool fks_level1_search(fks_level1 *table, uint32_t key) {
 }
 
 void fks_level1_destroy(fks_level1 *table) {
+    if (table == NULL) return;
     for (uint32_t i = 0; i < table->size; ++i) fks_level2_destroy(table->level2_tables[i]);
     free(table->level2_tables);
     free(table);

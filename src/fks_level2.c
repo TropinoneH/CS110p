@@ -55,6 +55,7 @@ bool fks_level2_search(fks_level2 *table, uint32_t key) {
 }
 
 void fks_level2_destroy(fks_level2 *table) {
+    if (table == NULL) return;
     free(table->slots);
     free(table);
 }

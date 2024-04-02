@@ -2,7 +2,7 @@
 #include "../inc/hash_func.h"
 
 hash_chaining *hash_chaining_init(uint32_t size) {
-    hash_chaining *table = (hash_chaining *)malloc(sizeof(hash_chaining));
+    hash_chaining *table = (hash_chaining *) malloc(sizeof(hash_chaining));
     table->slots = calloc(size, sizeof(list_node *));
     table->size = size;
     table->parameters = generate_hash_parameters();
@@ -11,10 +11,19 @@ hash_chaining *hash_chaining_init(uint32_t size) {
 
 void hash_chaining_insert(hash_chaining *table, uint32_t key) {
     uint32_t index = hash_func(key, table->parameters, table->size);
-    list_node *node = (list_node *)malloc(sizeof(list_node));
+    list_node *node = (list_node *) malloc(sizeof(list_node));
     node->key = key;
-    node->next = table->slots[index];
-    table->slots[index] = node;
+    node->next = NULL;
+    list_node *cur = table->slots[index];
+    if (!cur) {
+        table->slots[index] = node;
+        return;
+    }
+    while (cur->next) {
+        if (cur->key == key) return;
+        cur = cur->next;
+    }
+    cur->next = node;
 }
 
 bool hash_chaining_search(hash_chaining *table, uint32_t key) {

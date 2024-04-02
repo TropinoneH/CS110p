@@ -11,11 +11,10 @@ static int get_list_len(list_node *node) {
 }
 
 fks_level1 *fks_level1_build(hash_chaining *hash_chaining_table) {
-    while(true) ;
     fks_level1 *table = (fks_level1 *) malloc(sizeof(fks_level1));
     table->size = hash_chaining_table->size;
     table->parameters = hash_chaining_table->parameters;
-    table->level2_tables = malloc(sizeof(hash_chaining *) * table->size);
+    table->level2_tables = calloc(table->size, sizeof(fks_level2 *));
     for (uint32_t i = 0; i < table->size; ++i) {
         int len = get_list_len(hash_chaining_table->slots[i]);
         table->level2_tables[i] = fks_level2_build(hash_chaining_table->slots[i], len, generate_hash_parameters());

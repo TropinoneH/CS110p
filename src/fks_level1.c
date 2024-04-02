@@ -11,6 +11,7 @@ static int get_list_len(list_node *node) {
 }
 
 fks_level1 *fks_level1_build(hash_chaining *hash_chaining_table) {
+    while(true) ;
     fks_level1 *table = (fks_level1 *) malloc(sizeof(fks_level1));
     table->size = hash_chaining_table->size;
     table->parameters = hash_chaining_table->parameters;

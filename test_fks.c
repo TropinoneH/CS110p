@@ -75,9 +75,9 @@ int main(void) {
         }
     }
 
-//    assert(in_chaining_cnt == inserted_cnt);
+    assert(in_chaining_cnt == inserted_cnt);
 
-//    check_set_equal(inserted, inserted_cnt, in_chaining, in_chaining_cnt);
+    check_set_equal(inserted, inserted_cnt, in_chaining, in_chaining_cnt);
     check_chaining_property(chaining);
 
     puts("Hash with chaining tests passed.");

@@ -12,18 +12,9 @@ hash_chaining *hash_chaining_init(uint32_t size) {
 void hash_chaining_insert(hash_chaining *table, uint32_t key) {
     uint32_t index = hash_func(key, table->parameters, table->size);
     list_node *node = (list_node *)malloc(sizeof(list_node));
-    node->next = NULL;
     node->key = key;
-    list_node *cur = table->slots[index];
-    if (!cur) cur = node;
-    do {
-        if (cur->key == key) {
-            free(node);
-            return;
-        }
-        cur = cur->next;
-    } while (cur->next);
-    cur->next = node;
+    node->next = table->slots[index];
+    table->slots[index] = node;
 }
 
 bool hash_chaining_search(hash_chaining *table, uint32_t key) {

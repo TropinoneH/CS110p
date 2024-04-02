@@ -26,10 +26,7 @@ fks_level2 *fks_level2_build(list_node *head, uint32_t size, hash_parameters par
         fks_level2_destroy(table);
         table = fks_level2_init(size, generate_hash_parameters());
         current = head;
-        int a = 0;
         while (current) {
-            ++a;
-            printf("size: %u, key: %u, cnt: %d\n", size, current->key, a);
             if (!fks_level2_insert(table, current->key)) {
                 no_conflict = false;
                 break;
@@ -44,7 +41,7 @@ fks_level2 *fks_level2_build(list_node *head, uint32_t size, hash_parameters par
 bool fks_level2_insert(fks_level2 *table, uint32_t key) {
     uint32_t index = hash_func(key, table->parameters, table->size);
     // printf("p->a: %u, p->b: %u\n", table->parameters.a, table->parameters.b);
-    if (table->slots[index] != FKS_LEVEL2_EMPTY) {
+    if (table->slots[index] != FKS_LEVEL2_EMPTY && table->slots[index] != key) {
         return false;
     }
     table->slots[index] = key;

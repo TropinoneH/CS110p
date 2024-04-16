@@ -1,4 +1,4 @@
-.import input.S
+.import input2.S
 
 .text
 main:
@@ -14,9 +14,12 @@ main:
     lw s2 0(s2)
     # kernel_row
     lw s3 0(s3)
-    # padding
-    addi s0 s0 2
-    addi s1 s1 2
+    # padding, rol_padding = col_padding(kernel will be square and length will be odd)
+    addi s9 s2 -1
+    srai s9 s9 1
+    add t0 s9 s9
+    add s0 s0 t0
+    add s1 s1 t0
     # s4 = image_row - kernel_row + 1
     addi s4 s1 1
     sub s4 s4 s3
@@ -134,21 +137,24 @@ end:
     ecall
 
 get_image_pixel:
-    # row != 0
-    xor t0 a2 x0
-    # row != img_row - 1
-    addi t1 s1 -1
-    xor t1 a2 t1
-    # col != 0
-    xor t2 a3 x0
-    # col != img_col - 1
-    addi t3 s0 -1
-    xor t3 a3 t3
+    # row_padding = col_padding
+    # row < row_padding
+    slt t0 a2 s9
+    # ans_row - row_padding < row
+    sub t1 s1 s9
+    sub t1 t1 s9
+    slt t1 t1 a2
+    # col < padding
+    slt t2 a3 s9
+    # ans_col - padding < col
+    sub t3 s0 s9
+    sub t3 t3 s9
+    slt t3 t3 a3
     # if row=0 or row=img_row or col=0 or col=img_col, return 0
-    beqz t0 padding_pixel
-    beqz t1 padding_pixel
-    beqz t2 padding_pixel
-    beqz t3 padding_pixel
+    bnez t0 padding_pixel
+    bnez t1 padding_pixel
+    bnez t2 padding_pixel
+    bnez t3 padding_pixel
     # else => truth pixel => return image[row-1][col-1]
     addi a2 a2 -1
     addi a3 a3 -1

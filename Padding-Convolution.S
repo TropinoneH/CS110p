@@ -1,4 +1,4 @@
-.import input.S
+.import "./RISC-V/in3.S"
 
 .text
 main:
@@ -145,7 +145,7 @@ get_image_pixel:
     # col < padding
     slt t2 a3 s9
     # ans_col - padding < col
-    slt t3 s0 a2
+    slt t3 s0 a3
     # if row=0 or row=img_row or col=0 or col=img_col, return 0
     bnez t0 padding_pixel
     bnez t1 padding_pixel

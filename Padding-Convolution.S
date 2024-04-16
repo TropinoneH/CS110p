@@ -1,4 +1,4 @@
-.import input2.S
+.import input.S
 
 .text
 main:

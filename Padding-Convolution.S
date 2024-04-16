@@ -136,12 +136,14 @@ end:
 get_image_pixel:
     # row != 0
     xor t0 a2 x0
-    # row != img_row
-    xor t1 a2 s1
+    # row != img_row - 1
+    addi t1 s1 -1
+    xor t1 a2 t1
     # col != 0
     xor t2 a3 x0
-    # col != img_col
-    xor t3 a3 s0
+    # col != img_col - 1
+    addi t3 s0 -1
+    xor t3 a3 t3
     # if row=0 or row=img_row or col=0 or col=img_col, return 0
     beqz t0 padding_pixel
     beqz t1 padding_pixel
@@ -151,7 +153,9 @@ get_image_pixel:
     addi a2 a2 -1
     addi a3 a3 -1
     # index = (i + ki) * image_col + (j + kj)
-    mul a2 a2 s0
+    # image_col = padding_image_col - 2
+    addi t0 s0 -2
+    mul a2 a2 t0
     add a2 a2 a3
     mul a2 a2 s8
     add a2 a2 s6

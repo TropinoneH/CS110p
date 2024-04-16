@@ -24,6 +24,7 @@ main:
     addi s9 s2 -1
     srai s9 s9 1
     add t0 s9 s9
+    # add padding to output image
     add s4 s4 t0
     add s5 s5 t0
     # image address
@@ -76,7 +77,9 @@ loop_kernel_col:
     beq t3 s2    end_kernel_col
     # calculate the index of image and kernel
     # image index = (i + ki) * image_col + (j + kj)
+    # a2 = i + ki, row
     add a2 t0 t2
+    # a3 = j + kj, col
     add a3 t1 t3
     # calc image pixel, if col=0/cols or row=0/rows, then return 0
     # or, it will return image[row-1][col-1]
@@ -138,19 +141,16 @@ end:
 
 get_image_pixel:
     # row_padding = col_padding
-    # row < row_padding
-    slt t0 a2 s9
-    # ans_row - row_padding < row
-    slt t1 s1 a2
-    # col < padding
-    slt t2 a3 s9
-    # ans_col - padding < col
-    slt t3 s0 a3
-    # if row=0 or row=img_row or col=0 or col=img_col, return 0
-    bnez t0 padding_pixel
-    bnez t1 padding_pixel
-    bnez t2 padding_pixel
-    bnez t3 padding_pixel
+    # row < row_padding => 0
+    blt a2 s9 padding_pixel
+    # image_row < row - padding => 0
+    sub t1 a2 s9
+    bge t1 s1 padding_pixel
+    # col < padding => 0
+    blt a3 s9 padding_pixel
+    # image_col < col - padding => 0
+    sub t3 a3 s9
+    bge t3 s0 padding_pixel
     # else => truth pixel => return image[row-padding][col-padding]
     sub a2 a2 s9
     sub a3 a3 s9

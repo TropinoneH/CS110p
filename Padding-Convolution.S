@@ -1,4 +1,4 @@
-.import "./RISC-V/in3.S"
+.import input.S
 
 .text
 main:

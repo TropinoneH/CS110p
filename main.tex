@@ -19,6 +19,8 @@
 % TODO: Add / Delete here as you need
 %-------------------------------%
 \usepackage{amsmath,amssymb,bm}
+\usepackage{tikz}
+\usetikzlibrary{automata, positioning, arrows}
 \usepackage{hyperref}
 
 \newcommand{\KL}{\mathrm{KL}}
@@ -56,7 +58,7 @@ Analyze the circuit shown in Fig.~\ref{fig:circuit} and answer the following que
 (b) Which kind of arithmetic operation (addition, subtraction, multiplication, division, shift, or comparison) is performed by this circuit? What are the advantages and disadvantages of the circuit in Fig.~\ref{fig:circuit} compared to the corresponding arithmetic circuit mentioned in \href{https://toast-lab.sist.shanghaitech.edu.cn/courses/CS110@ShanghaiTech/Spring-2024/lecture_notes/L09.\%20Digital\%20circuits\%20and\%20systems\%201.pdf}{Digital circuits I}?\textbf{[10 pt]}
 
 (c) Assume that all 2-input logic gates have 1 ns delay, all 3-input logic gates have 2 ns delay, and other delays are not considered. Calculate the max delay of this circuit.\textbf{[10 pt]}
-
+\newpage
 \begin{answer}[Question 1]
     (a)
     \begin{center}
@@ -177,7 +179,47 @@ The function of a vending machine which sells bottles of soda is described below
 
 (c) Could Moore machines and Mealy machines be converted into each other to implement the same function? Compare their difference.\textbf{[10 pt]}
 \begin{answer}[Question 3]
-        Your answer here.
+    (a)
+
+    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3cm,
+        thick,base node/.style={circle,draw}, real node/.style={double,circle,draw}]
+        \node[initial,state,initial text={}] (1) {IDLE / 0,\$0};
+        \node[state](2)[right of=1]{\$0.5 / 0,\$0};
+        \node[state](3)[right of=2]{\$1.0 / 0,\$0};
+        \node[state](4)[below of=3]{\$1.5 / 1,\$0};
+        \node[state](5)[below of=2]{\$2.0 / 1,\$0.5};
+        
+        \path[]
+        (1) edge node {\$0.5} (2)
+        (2) edge node {\$0.5} (3)
+        (3) edge node {\$0.5} (4)
+        (2) [red]edge [red]node {\$1.0} (4)
+        (4) edge node {} (1)
+        (3) [blue]edge [blue]node {\$1.0} (5)
+        (5) [black]edge node {} (1);
+    \end{tikzpicture}
+
+    (b)
+
+    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=3cm,
+        thick,base node/.style={circle,draw}, real node/.style={double,circle,draw}]
+        \node[initial,state,initial text={}] (1) {IDLE};
+        \node[state](2)[right of=1]{\$0.5};
+        \node[state](3)[right of=2]{\$1.0};
+        
+        \path[]
+        (1) edge node {\$0.5 / 0,\$0} (2)
+        (2) edge node {\$0.5 / 0,\$0} (3)
+        (3) [black, bend right=-50]edge node {\$0.5 / 1,\$0} (1)
+        (2) [red, bend right=-25]edge [red]node {\$1.0 / 1,\$0} (1)
+        (3) [blue, bend right=25]edge [blue]node {\$1.0 / 1,\$0.5} (1);
+    \end{tikzpicture}
+
+    (c)
+
+    They can be converted into each other.
+
+    The differences are: 1. Mealy Machines may have fewer nodes. 2. The outputs of a Mealy Machine are on the arrows of state transitions, while the outputs of a Moore Machine are on the nodes.
 \end{answer}
 
 \end{document}

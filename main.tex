@@ -157,7 +157,53 @@ Draw a counter that counts from 0 to 5 using three D flip-flops (each flip-flops
     \label{fig:q2}
 \end{figure}
 \begin{answer}[Question 2]
-    \includegraphics[height=10cm]{Screenshot from 2024-04-23 14-42-25.png}
+    \includegraphics[height=6cm]{Screenshot from 2024-04-23 14-42-25.png}
+
+    the FSM is:
+    \begin{center}
+        \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2cm,
+        thick,base node/.style={circle,draw}, real node/.style={double,circle,draw}]
+        \node[state] (1) {000};
+        \node[state](2)[right of=1]{001};
+        \node[state](3)[right of=2]{010};
+        \node[state](4)[below of=3]{011};
+        \node[state](5)[below of=2]{100};
+        \node[state](6)[below of=1]{101};
+        
+        \path[]
+        (1) edge node {} (2)
+        (2) edge node {} (3)
+        (3) edge node {} (4)
+        (4) edge node {} (5)
+        (5) edge node {} (6)
+        (6) edge node {} (1);
+    \end{tikzpicture}
+    \end{center}
+
+    \begin{center}
+        \begin{tabular}{|c|c|c||c|c|c|}
+            \hline
+            $a_{2_{t-1}}$&$a_{1_{t-1}}$&$a_{0_{t-1}}$&$a_{2_t}$&$a_{1_t}$&$a_{0_t}$\\
+            \hline
+            0&0&0&0&0&1\\
+            \hline
+            0&0&1&0&1&0\\
+            \hline
+            0&1&0&0&1&1\\
+            \hline
+            0&1&1&1&0&0\\
+            \hline
+            1&0&0&1&0&1\\
+            \hline
+            1&0&1&0&0&0\\
+            \hline
+        \end{tabular}
+    \end{center}
+
+    $\Rightarrow$ after simplify, the output is: 
+    $$a_0=\overline{a_0}$$
+    $$a_1=(a_0\oplus a_1)\overline{a_2}$$
+    $$a_2=a_0a_1\bar{a_2}+\overline{a_0+a_1}a_2$$
 \end{answer}
 
 \newpage

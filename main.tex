@@ -11,8 +11,8 @@
 % TODO: Fill these
 %-------------------------------%
 \title{Assignment 4: Digital circuit}
-\setmembername{}  % Fill student name
-\setmemberuid{}  % Fill  student id
+\setmembername{He Yaoyu}  % Fill student name
+\setmemberuid{2022533089}  % Fill  student id
 
 %-------------------------------%
 % Add / Delete commands and packages
@@ -55,10 +55,94 @@ Analyze the circuit shown in Fig.~\ref{fig:circuit} and answer the following que
 
 (b) Which kind of arithmetic operation (addition, subtraction, multiplication, division, shift, or comparison) is performed by this circuit? What are the advantages and disadvantages of the circuit in Fig.~\ref{fig:circuit} compared to the corresponding arithmetic circuit mentioned in \href{https://toast-lab.sist.shanghaitech.edu.cn/courses/CS110@ShanghaiTech/Spring-2024/lecture_notes/L09.\%20Digital\%20circuits\%20and\%20systems\%201.pdf}{Digital circuits I}?\textbf{[10 pt]}
 
-(b) Assume that all 2-input logic gates have 1 ns delay, all 3-input logic gates have 2 ns delay, and other delays are not considered. Calculate the max delay of this circuit.\textbf{[10 pt]}
+(c) Assume that all 2-input logic gates have 1 ns delay, all 3-input logic gates have 2 ns delay, and other delays are not considered. Calculate the max delay of this circuit.\textbf{[10 pt]}
 
 \begin{answer}[Question 1]
-        Your answer here.
+    (a)
+    \begin{center}
+        \begin{tabular}{ |c|c|c|c|c|c|c|c|c|c|c|c|c| }
+            \hline
+            $A_0$&$A_1$&$B_0$&$B_1$&$c_0$&$g_0$&$g_1$&$p_0$&$p_1$&$c_1$&$c_2$&$r_0$&$r_1$\\
+            \hline
+            0&0&0&0&0&0&0&0&0&0&0&0&0\\
+            \hline
+            0&0&0&0&1&0&0&0&0&0&0&1&0\\
+            \hline
+            0&0&0&1&0&0&0&0&1&0&0&0&1\\
+            \hline
+            0&0&0&1&1&0&0&0&1&0&0&1&1\\
+            \hline
+            0&0&1&0&0&0&0&1&0&0&0&1&0\\
+            \hline
+            0&0&1&0&1&0&0&1&0&1&0&0&1\\
+            \hline
+            0&0&1&1&0&0&0&1&1&0&0&1&1\\
+            \hline
+            0&0&1&1&1&0&0&1&1&1&1&0&0\\
+            \hline
+            0&1&0&0&0&0&0&0&1&0&0&0&1\\
+            \hline
+            0&1&0&0&1&0&0&0&1&0&0&1&1\\
+            \hline
+            0&1&0&1&0&0&1&0&0&0&1&0&0\\
+            \hline
+            0&1&0&1&1&0&1&0&0&0&1&1&0\\
+            \hline
+            0&1&1&0&0&0&0&1&1&0&0&1&1\\
+            \hline
+            0&1&1&0&1&0&0&1&1&1&1&0&0\\
+            \hline
+            0&1&1&1&0&0&1&1&0&0&1&1&0\\
+            \hline
+            0&1&1&1&1&0&1&1&0&1&1&0&1\\
+            \hline
+            1&0&0&0&0&0&0&1&0&0&0&1&0\\
+            \hline
+            1&0&0&0&1&0&0&1&0&1&0&0&1\\
+            \hline
+            1&0&0&1&0&0&0&1&1&0&0&1&1\\
+            \hline
+            1&0&0&1&1&0&0&1&1&1&1&0&0\\
+            \hline
+            1&0&1&0&0&1&0&0&0&1&0&0&1\\
+            \hline
+            1&0&1&0&1&1&0&0&0&1&0&1&1\\
+            \hline
+            1&0&1&1&0&1&0&0&1&1&1&0&0\\
+            \hline
+            1&0&1&1&1&1&0&0&1&1&1&1&0\\
+            \hline
+            1&1&0&0&0&0&0&1&1&0&0&1&1\\
+            \hline
+            1&1&0&0&1&0&0&1&1&1&1&0&0\\
+            \hline
+            1&1&0&1&0&0&1&1&0&0&1&1&0\\
+            \hline
+            1&1&0&1&1&0&1&1&0&1&1&0&1\\
+            \hline
+            1&1&1&0&0&1&0&0&1&1&1&0&0\\
+            \hline
+            1&1&1&0&1&1&0&0&1&1&1&1&0\\
+            \hline
+            1&1&1&1&0&1&1&0&0&1&1&0&1\\
+            \hline
+            1&1&1&1&1&1&1&0&0&1&1&1&1\\
+            \hline
+        \end{tabular}        
+    \end{center}
+    (b)
+    it is a addition operation.
+
+
+    Advantages: Shorter delay, capable of parallel computation across multiple bits;
+
+    Disadvantages: Requires more logic gates.
+
+    (c)
+
+    the longest circuit path is c2$\rightarrow$3-or$\rightarrow$3-and$\rightarrow$p0/p1$\rightarrow$2-xor
+
+    then the max delay is $2\times2+1\times1=5$
 \end{answer}
 
 \newpage

@@ -570,7 +570,7 @@
     <comp lib="0" loc="(1070,440)" name="Pin">
       <a name="appearance" val="NewPins"/>
       <a name="facing" val="west"/>
-      <a name="label" val="alu_result"/>
+      <a name="label" val="mem_addr"/>
       <a name="output" val="true"/>
       <a name="radix" val="16"/>
       <a name="width" val="32"/>

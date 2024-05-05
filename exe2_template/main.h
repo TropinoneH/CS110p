@@ -14,24 +14,25 @@
 
 #define PI 3.14159
 
-typedef struct FVec
-{
+typedef struct FVec {
     unsigned int length;
     unsigned int min_length;
     unsigned int min_deta;
-    float* data;
-    float* sum;
+    float *data;
+    float *sum;
 } FVec;
 
-typedef struct Image
-{
+typedef struct Image {
     unsigned int dimX, dimY, numChannels;
-    float* data;
+    float *data;
 } Image;
 
 Image gb_h(Image a, FVec gv);
+
 Image gb_v(Image a, FVec gv);
+
 Image img_sc(Image a);
+
 Image apply_gb(Image a, FVec gv);
 
 #endif

@@ -1,0 +1,2 @@
+1. data is more continuous in the horizontal direction. So, the hit rate is higher in the horizontal direction.
+2. transpose operation is a fast enough, and the data is more continuous in the horizontal direction. so it's faster.

@@ -7,6 +7,8 @@ clean:
 	@-rm -f *.o gbfloat_base
 	@-rm -f *.o gbfloat_fast
 	@-rm -f *.o test_accuracy
+	@-rm -f *.o test_base.jpg
+	@-rm -f *.o test_fast.jpg
 	
 base:
 	@-rm -f *.o gbfloat_base

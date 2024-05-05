@@ -18,7 +18,9 @@ Image transpose(Image a){
 Image apply_gb(Image a, FVec gv)
 {
     Image b = gb_h(a, gv);
-    Image c = gb_v(b,gv);
+    Image c = transpose(b);
+    c = gb_h(c, gv);
+    c = transpose(c);
     free(b.data);
     return c;
 }

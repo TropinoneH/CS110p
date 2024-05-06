@@ -12,11 +12,11 @@ Cache Size=Block Size(8) \* Number of Blocks(4)=32
 
 1. hit rate: 0.75
 2. hit rate will increase, until 1
+   in fact, after the second loop, the hit rate will be 1.
 3. use cache block, reuse some block in the outer loop
-
-
 
 # Senario 3
 
 1. hit rate is 0.1875, 0.3125, 0.0625, 0.125, 0.25.
+   the range is (0, 0.5). consider replacing what should be least replaced (hit rate=0) and replacing what should be removed most (hit rate=0.5)
 2. use direct mapping. then the hit rate is always 0.5

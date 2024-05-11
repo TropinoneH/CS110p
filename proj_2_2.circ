@@ -872,8 +872,9 @@
     <comp lib="4" loc="(860,850)" name="ROM">
       <a name="appearance" val="logisim_evolution"/>
       <a name="contents">addr/data: 8 16
-4425 6525 40e 942a 84a2 49d 8000 1
-1
+4409 147d c011 bffd 1 1 4111 5429
+c422 44b5 48 8482 8526 414c 511 c148
+8000
 </a>
       <a name="dataWidth" val="16"/>
     </comp>

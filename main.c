@@ -20,13 +20,14 @@ uint64_t get_timestamp(){
 }
 
 void mem_store(uint8_t * src, uint32_t addr,uint32_t count){
+    fprintf(log,"mem write at %u\n",addr);
     memcpy(memory+addr,src,count);
 }
 
 void mem_load(uint8_t * dst, uint32_t addr, uint32_t count){
+    fprintf(log,"mem read at %u\n",addr);
     memcpy(dst,memory+addr,count);
 }
-
 // write wrapper
 static void write(struct cache * cache,uint32_t addr, uint8_t byte) {
     bool hit = cache_write_byte(cache, addr, byte);

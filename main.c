@@ -75,7 +75,7 @@ int main(){
     .write_back = true};
 
     struct cache_config L2_config={
-    .address_bits = 4,
+    .address_bits = 32,
     .line_size = 4,
     .lines = 32,
     .size = 4*32,

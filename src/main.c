@@ -19,28 +19,28 @@ void IO_init(void) {
 
 void Board_self_test(void) {
     while (1) {
-        LCD_ShowString(60, 25, (u8 *)"TEST", WHITE);
+        LCD_ShowString(60, 25, (u8 *) "TEST", WHITE);
         if (Get_Button(JOY_LEFT)) {
-            LCD_ShowString(5, 25, (u8 *)"L", BLUE);
+            LCD_ShowString(5, 25, (u8 *) "L", BLUE);
         }
         if (Get_Button(JOY_DOWN)) {
-            LCD_ShowString(25, 45, (u8 *)"D", BLUE);
-            LCD_ShowString(60, 25, (u8 *)"TEST", RED);
+            LCD_ShowString(25, 45, (u8 *) "D", BLUE);
+            LCD_ShowString(60, 25, (u8 *) "TEST", RED);
         }
         if (Get_Button(JOY_UP)) {
-            LCD_ShowString(25, 5, (u8 *)"U", BLUE);
+            LCD_ShowString(25, 5, (u8 *) "U", BLUE);
         }
         if (Get_Button(JOY_RIGHT)) {
-            LCD_ShowString(45, 25, (u8 *)"R", BLUE);
+            LCD_ShowString(45, 25, (u8 *) "R", BLUE);
         }
         if (Get_Button(JOY_CTR)) {
-            LCD_ShowString(25, 25, (u8 *)"C", BLUE);
+            LCD_ShowString(25, 25, (u8 *) "C", BLUE);
         }
         if (Get_Button(BUTTON_1)) {
-            LCD_ShowString(60, 5, (u8 *)"SW2", BLUE);
+            LCD_ShowString(60, 45, (u8 *) "SW2", BLUE);
         }
         if (Get_Button(BUTTON_2)) {
-            LCD_ShowString(60, 45, (u8 *)"SW1", BLUE);
+            LCD_ShowString(60, 5, (u8 *) "SW1", BLUE);
         }
         draw();
         delay_1ms(10);

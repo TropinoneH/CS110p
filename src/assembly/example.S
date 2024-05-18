@@ -2,12 +2,13 @@
 .globl draw
 .type draw, @function
 draw:
-	li a0,120
-	li a1,15
-	li a2,8
-	li a3,65535
+	li a0,112
+	li a1,7
+	li a2,128
+	li a3,23
+	li a4,65535
 	addi sp,sp,-4
 	sw ra,0(sp)
-	jal LCD_DrawCircle
+	jal LCD_DrawRectangle
 	lw ra,0(sp)
 	addi sp,sp,4

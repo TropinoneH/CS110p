@@ -2369,6 +2369,7 @@ c422 44b5 48 8482 8526 414c 511 c148
     <comp lib="0" loc="(540,1440)" name="Bit Extender">
       <a name="in_width" val="10"/>
       <a name="out_width" val="32"/>
+      <a name="type" val="zero"/>
     </comp>
     <comp lib="0" loc="(540,290)" name="Tunnel">
       <a name="label" val="jr"/>
@@ -2575,6 +2576,7 @@ c422 44b5 48 8482 8526 414c 511 c148
     </comp>
     <comp lib="0" loc="(700,1470)" name="Bit Extender">
       <a name="out_width" val="32"/>
+      <a name="type" val="zero"/>
     </comp>
     <comp lib="0" loc="(700,280)" name="Tunnel">
       <a name="facing" val="east"/>
@@ -2742,6 +2744,7 @@ c422 44b5 48 8482 8526 414c 511 c148
     <comp lib="0" loc="(870,1500)" name="Bit Extender">
       <a name="in_width" val="7"/>
       <a name="out_width" val="32"/>
+      <a name="type" val="zero"/>
     </comp>
     <comp lib="0" loc="(890,1130)" name="Splitter">
       <a name="appear" val="center"/>

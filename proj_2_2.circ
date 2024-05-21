@@ -682,11 +682,6 @@
       <a name="label" val="rd"/>
       <a name="width" val="5"/>
     </comp>
-    <comp lib="0" loc="(910,1240)" name="Tunnel">
-      <a name="facing" val="east"/>
-      <a name="label" val="res"/>
-      <a name="width" val="32"/>
-    </comp>
     <comp lib="0" loc="(910,1280)" name="Tunnel">
       <a name="facing" val="east"/>
       <a name="label" val="mem_we"/>
@@ -878,7 +873,10 @@
     <wire from="(720,690)" to="(720,720)"/>
     <wire from="(720,690)" to="(880,690)"/>
     <wire from="(720,740)" to="(720,770)"/>
-    <wire from="(720,770)" to="(880,770)"/>
+    <wire from="(720,770)" to="(770,770)"/>
+    <wire from="(770,1240)" to="(1170,1240)"/>
+    <wire from="(770,770)" to="(770,1240)"/>
+    <wire from="(770,770)" to="(880,770)"/>
     <wire from="(860,710)" to="(880,710)"/>
     <wire from="(860,740)" to="(890,740)"/>
     <wire from="(860,790)" to="(880,790)"/>
@@ -890,7 +888,6 @@
     <wire from="(910,1100)" to="(1050,1100)"/>
     <wire from="(910,1140)" to="(1180,1140)"/>
     <wire from="(910,1180)" to="(1220,1180)"/>
-    <wire from="(910,1240)" to="(1170,1240)"/>
     <wire from="(910,1280)" to="(1180,1280)"/>
     <wire from="(910,1320)" to="(1220,1320)"/>
     <wire from="(910,700)" to="(950,700)"/>

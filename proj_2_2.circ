@@ -1222,6 +1222,10 @@
       <a name="radix" val="10unsigned"/>
       <a name="width" val="32"/>
     </comp>
+    <comp lib="0" loc="(1140,1540)" name="Tunnel">
+      <a name="label" val="inst_i"/>
+      <a name="width" val="16"/>
+    </comp>
     <comp lib="0" loc="(1150,910)" name="Tunnel">
       <a name="label" val="inst_i"/>
       <a name="width" val="16"/>
@@ -1424,6 +1428,46 @@
       <a name="label" val="wb_data"/>
       <a name="width" val="32"/>
     </comp>
+    <comp lib="0" loc="(810,1500)" name="Splitter">
+      <a name="bit1" val="0"/>
+      <a name="bit10" val="none"/>
+      <a name="bit11" val="none"/>
+      <a name="bit12" val="none"/>
+      <a name="bit13" val="none"/>
+      <a name="bit14" val="none"/>
+      <a name="bit15" val="none"/>
+      <a name="bit16" val="none"/>
+      <a name="bit17" val="none"/>
+      <a name="bit18" val="none"/>
+      <a name="bit19" val="none"/>
+      <a name="bit2" val="0"/>
+      <a name="bit20" val="none"/>
+      <a name="bit21" val="none"/>
+      <a name="bit22" val="none"/>
+      <a name="bit23" val="none"/>
+      <a name="bit24" val="none"/>
+      <a name="bit25" val="none"/>
+      <a name="bit26" val="none"/>
+      <a name="bit27" val="none"/>
+      <a name="bit28" val="none"/>
+      <a name="bit29" val="none"/>
+      <a name="bit3" val="0"/>
+      <a name="bit30" val="none"/>
+      <a name="bit31" val="none"/>
+      <a name="bit4" val="0"/>
+      <a name="bit5" val="0"/>
+      <a name="bit6" val="0"/>
+      <a name="bit7" val="0"/>
+      <a name="bit8" val="none"/>
+      <a name="bit9" val="none"/>
+      <a name="fanout" val="1"/>
+      <a name="incoming" val="32"/>
+    </comp>
+    <comp lib="0" loc="(810,1500)" name="Tunnel">
+      <a name="facing" val="east"/>
+      <a name="label" val="inst_addr"/>
+      <a name="width" val="32"/>
+    </comp>
     <comp lib="0" loc="(820,870)" name="Splitter">
       <a name="bit1" val="0"/>
       <a name="bit10" val="none"/>
@@ -1480,14 +1524,26 @@
       <a name="dataWidth" val="32"/>
       <a name="type" val="nonvolatile"/>
     </comp>
-    <comp lib="4" loc="(860,850)" name="ROM">
+    <comp lib="4" loc="(850,1480)" name="ROM">
       <a name="appearance" val="logisim_evolution"/>
       <a name="contents">addr/data: 8 16
-4409 147d c011 bffd 1 1 4111 5429
+4429 4491 c0c0 40c8 1000 1 4111 5429
 c422 44b5 48 8482 8526 414c 511 c148
 8000
 </a>
       <a name="dataWidth" val="16"/>
+    </comp>
+    <comp lib="4" loc="(860,850)" name="ROM">
+      <a name="appearance" val="logisim_evolution"/>
+      <a name="contents">addr/data: 8 16
+4429 4491 c0c0 40c8 1000 1 4111 5429
+c422 44b5 48 8482 8526 414c 511 c148
+8000
+</a>
+      <a name="dataWidth" val="16"/>
+    </comp>
+    <comp lib="8" loc="(975,1460)" name="Text">
+      <a name="text" val="you can write any instruction in"/>
     </comp>
     <comp lib="8" loc="(985,830)" name="Text">
       <a name="text" val="you can write any instruction in"/>
@@ -1503,7 +1559,7 @@ c422 44b5 48 8482 8526 414c 511 c148
     <wire from="(1000,560)" to="(1070,560)"/>
     <wire from="(1000,600)" to="(1070,600)"/>
     <wire from="(1000,640)" to="(1070,640)"/>
-    <wire from="(1100,910)" to="(1150,910)"/>
+    <wire from="(1090,1540)" to="(1140,1540)"/>
     <wire from="(1420,790)" to="(1440,790)"/>
     <wire from="(1420,820)" to="(1490,820)"/>
     <wire from="(1420,850)" to="(1440,850)"/>
@@ -1612,7 +1668,7 @@ c422 44b5 48 8482 8526 414c 511 c148
     <wire from="(610,1110)" to="(620,1110)"/>
     <wire from="(610,1140)" to="(610,1150)"/>
     <wire from="(610,1150)" to="(620,1150)"/>
-    <wire from="(840,860)" to="(860,860)"/>
+    <wire from="(830,1490)" to="(850,1490)"/>
   </circuit>
   <circuit name="ImmGem">
     <a name="appearance" val="logisim_evolution"/>
@@ -2725,7 +2781,6 @@ c422 44b5 48 8482 8526 414c 511 c148
       <a name="width" val="3"/>
     </comp>
     <comp lib="0" loc="(690,960)" name="Constant">
-      <a name="value" val="0x2"/>
       <a name="width" val="2"/>
     </comp>
     <comp lib="0" loc="(690,990)" name="Tunnel">
@@ -3846,7 +3901,6 @@ c422 44b5 48 8482 8526 414c 511 c148
     <wire from="(1040,830)" to="(1170,830)"/>
     <wire from="(1140,850)" to="(1140,900)"/>
     <wire from="(1140,850)" to="(1170,850)"/>
-    <wire from="(1150,310)" to="(1150,320)"/>
     <wire from="(1150,320)" to="(1150,450)"/>
     <wire from="(1150,450)" to="(1150,480)"/>
     <wire from="(1150,450)" to="(1170,450)"/>

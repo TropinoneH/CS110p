@@ -50,21 +50,25 @@ struct cache {
     struct cache_line *lines;
 
     // lower level cache. should be NULL if the cache is the last level cache
-    struct cache * lower_cache;
+    struct cache *lower_cache;
 };
 
 /*DO NOT MODIFY FUNCTION DECLARATIONS BELOW*/
 
-struct cache * cache_create(struct cache_config config,struct cache * lower_cache);
-void cache_destroy(struct cache* cache);
-bool cache_read_byte(struct cache * cache, uint32_t addr, uint8_t *byte);
-bool cache_write_byte(struct cache * cache, uint32_t addr, uint8_t byte);
+struct cache *cache_create(struct cache_config config, struct cache *lower_cache);
 
-uint64_t get_timestamp();
+void cache_destroy(struct cache *cache);
+
+bool cache_read_byte(struct cache *cache, uint32_t addr, uint8_t *byte);
+
+bool cache_write_byte(struct cache *cache, uint32_t addr, uint8_t byte);
+
+uint64_t get_timestamp(void);
 
 // DO NOT directly dereference `addr`, you will get a `SIGSEG`
-void mem_store(uint8_t * src, uint32_t addr,uint32_t count);
-void mem_load(uint8_t * dst, uint32_t addr,uint32_t count);
+void mem_store(uint8_t *src, uint32_t addr, uint32_t count);
+
+void mem_load(uint8_t *dst, uint32_t addr, uint32_t count);
 
 /*DO NOT MODIFY FUNCTION DECLARATIONS ABOVE*/
 

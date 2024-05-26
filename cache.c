@@ -30,8 +30,7 @@ struct cache *cache_create(struct cache_config config, struct cache *lower_level
     cache->tag_mask = ((1 << cache->tag_bits) - 1) << (cache->offset_bits + cache->index_bits);
 
     cache->lines = (struct cache_line *) malloc(sizeof(struct cache_line) * cache->config.lines);
-    if (!cache->lines)
-    {
+    if (!cache->lines) {
         free(cache);
         return NULL;
     }
@@ -43,8 +42,7 @@ struct cache *cache_create(struct cache_config config, struct cache *lower_level
         cache->lines[i].last_access = 0;
         cache->lines[i].data = (uint8_t *) calloc(cache->config.line_size, sizeof(uint8_t));
 
-        if (!cache->lines[i].data)
-        {
+        if (!cache->lines[i].data) {
             for (size_t j = 0; j != i; ++j)
                 free(cache->lines[j].data);
             free(cache->lines);
@@ -68,6 +66,23 @@ and so on.
 */
 void cache_destroy(struct cache *cache) {
     /*YOUR CODE HERE*/
+    uint32_t sets_num = cache->config.lines / cache->config.ways;
+    for (uint32_t i = 0; i < cache->config.lines; ++i) {
+        if (cache->lines[i].dirty) {
+            uint32_t addr = (cache->lines[i].tag << (cache->config.address_bits - cache->tag_bits)) |
+                            ((i % sets_num) << cache->offset_bits);
+            if (cache->lower_cache != NULL) {
+                for (uint32_t j = 0; j < cache->config.line_size; ++j)
+                    cache_write_byte(cache->lower_cache, addr + j, cache->lines[i].data[j]);
+            } else {
+                mem_store(cache->lines[i].data, addr, cache->config.line_size);
+            }
+        }
+        free(cache->lines[i].data);
+    }
+
+    free(cache->lines);
+    free(cache);
 }
 
 /* Read one byte at a specific address. return hit=true/miss=false */

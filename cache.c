@@ -2,12 +2,33 @@
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <math.h>
 
 /* Create a cache simulator according to the config */
 struct cache *cache_create(struct cache_config config, struct cache *lower_level) {
     /*YOUR CODE HERE*/
-    struct cache *c = (struct cache *)malloc(sizeof(struct cache));
+    struct cache *c = (struct cache *) malloc(sizeof(struct cache));
     c->config = config;
+    c->lower_cache = lower_level;
+
+    c->offset_bits = (uint32_t) round(log2(c->config.line_size));
+    c->index_bits = (uint32_t) round(log2((double) c->config.lines / c->config.ways));
+    c->tag_bits = config.address_bits - c->offset_bits - c->index_bits;
+
+    c->offset_mask = (1 << c->offset_bits) - 1;
+    c->index_mask = ((1 << c->index_bits) - 1) << c->offset_bits;
+    c->tag_mask = ((1 << c->tag_bits) - 1) << (c->offset_bits + c->index_bits);
+
+    c->lines = (struct cache_line *) malloc(sizeof(struct cache_line) * c->config.lines);
+    for (uint32_t i = 0; i < c->config.lines; ++i) {
+        c->lines[i].valid = false;
+        c->lines[i].dirty = false;
+        c->lines[i].tag = 0;
+        c->lines[i].last_access = 0;
+        c->lines[i].data = (uint8_t *) malloc(sizeof(uint8_t) * c->config.line_size);
+        memset(c->lines[i].data, 0, sizeof(uint8_t) * c->config.line_size);
+    }
+
     return c;
 }
 
@@ -28,8 +49,10 @@ void cache_destroy(struct cache *cache) {
 /* Read one byte at a specific address. return hit=true/miss=false */
 bool cache_read_byte(struct cache *cache, uint32_t addr, uint8_t *byte) {
     /*YOUR CODE HERE*/
+    return true;
 }
 /* Write one byte into a specific address. return hit=true/miss=false*/
 bool cache_write_byte(struct cache *cache, uint32_t addr, uint8_t byte) {
     /*YOUR CODE HERE*/
+    return true;
 }

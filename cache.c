@@ -6,7 +6,7 @@
 /* utils */
 uint32_t mlog2(double x) {
     uint32_t res = 0;
-    while (x > .001) {
+    while (x - 1 > .001) {
         x /= 2;
         res++;
     }

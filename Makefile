@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -g -std=c11 -Wpedantic -Wall -Wextra -Werror -Wvla
+CFLAGS = -g -std=c11 -Wpedantic -Wall -Wextra -Werror -Wvla -lm
 MEMCHECK=valgrind --tool=memcheck --leak-check=full --track-origins=yes
 
 all: clean

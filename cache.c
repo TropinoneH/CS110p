@@ -44,15 +44,37 @@ and so on.
 */
 void cache_destroy(struct cache *cache) {
     /*YOUR CODE HERE*/
+    for (uint32_t i = 0; i < cache->config.lines; ++i) {
+        if (cache->lines[i].dirty) {
+            if (cache->lower_cache != NULL) {
+                uint32_t addr = (cache->lines[i].tag << (cache->config.address_bits - cache->tag_bits)) |
+                                (i << cache->offset_bits);
+                for (uint32_t j = 0; j < cache->config.line_size; ++j)
+                    cache_write_byte(cache->lower_cache, addr + j, cache->lines[i].data[j]);
+            } else {
+                mem_store(cache->lines[i].data, cache->config.line_size, cache->lines[i].tag << cache->offset_bits);
+            }
+        }
+        free(cache->lines[i].data);
+    }
+
+    free(cache->lines);
+    free(cache);
 }
 
 /* Read one byte at a specific address. return hit=true/miss=false */
 bool cache_read_byte(struct cache *cache, uint32_t addr, uint8_t *byte) {
     /*YOUR CODE HERE*/
+    cache->lines[0].last_access = get_timestamp();
+    addr += 1;
+    byte += 1;
     return true;
 }
 /* Write one byte into a specific address. return hit=true/miss=false*/
 bool cache_write_byte(struct cache *cache, uint32_t addr, uint8_t byte) {
     /*YOUR CODE HERE*/
+    cache->lines[0].last_access = get_timestamp();
+    addr += 1;
+    byte += 1;
     return true;
 }

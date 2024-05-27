@@ -86,9 +86,78 @@ void cache_destroy(struct cache *cache) {
 }
 
 /* Read one byte at a specific address. return hit=true/miss=false */
+void replace(struct cache *cache, struct cache_line *line, uint32_t addr) {
+    uint32_t lower_addr = addr & ~cache->offset_mask;
+
+    // for write back policy
+    if (cache->config.write_back && line->valid && line->dirty) {
+        if (cache->lower_cache)
+            for (uint32_t i = 0; i < cache->config.line_size; ++i)
+                cache_write_byte(cache->lower_cache, lower_addr + i, line->data[i]);
+        else
+            mem_store(line->data, lower_addr, cache->config.line_size);
+    }
+
+    line->valid = true;
+    line->dirty = false;
+
+    // load data from memory or lower cache
+    if (cache->lower_cache) {
+        for (uint32_t i = 0; i < cache->config.line_size; ++i)
+            cache_read_byte(cache->lower_cache, lower_addr + i, &line->data[i]);
+    } else {
+        mem_load(line->data, lower_addr, cache->config.line_size);
+    }
+}
+
 bool cache_read_byte(struct cache *cache, uint32_t addr, uint8_t *byte) {
     /*YOUR CODE HERE*/
-    return true;
+    uint32_t sets_num = cache->config.lines / cache->config.ways;
+    uint32_t offset = addr & cache->offset_mask;
+    uint32_t index = (addr & cache->index_mask) >> cache->offset_bits;
+    uint32_t tag = (addr & cache->tag_mask) >> (cache->offset_bits + cache->index_bits);
+
+    /***************************** hit *****************************/
+    for (uint32_t i = 0; i < cache->config.ways; ++i) {
+        uint32_t line_index = i * sets_num + index;
+        if (cache->lines[line_index].valid && cache->lines[line_index].tag == tag) {
+            cache->lines[line_index].last_access = get_timestamp();
+            *byte = cache->lines[line_index].data[offset];
+            return true;
+        }
+    }
+
+    /***************************** miss *****************************/
+
+    // find line by LRU and update last access time by time stamp
+    struct cache_line *line = &cache->lines[0];
+    for (uint32_t i = 0; i < cache->config.ways; ++i) {
+        // replace by LRU
+        uint32_t line_index = i * sets_num + index;
+        if (!cache->lines[line_index].valid || cache->lines[line_index].last_access < line->last_access)
+            line = &cache->lines[line_index];
+    }
+    line->last_access = get_timestamp();
+
+    // load data from memory or lower cache
+    if (!line->valid) {
+        // write directly(exist empty entry)
+        if (cache->lower_cache) {
+            for (uint32_t i = 0; i < cache->config.line_size; ++i)
+                cache_read_byte(cache->lower_cache, addr & ~cache->offset_mask, &line->data[i]);
+        } else {
+            mem_load(line->data, addr & ~cache->offset_mask, cache->config.line_size);
+        }
+        line->valid = true;
+        line->tag = tag;
+        *byte = line->data[offset];
+        return false;
+    } else {
+        // replace by LRU
+        replace(cache, line, addr);
+    }
+
+    return false;
 }
 /* Write one byte into a specific address. return hit=true/miss=false*/
 bool cache_write_byte(struct cache *cache, uint32_t addr, uint8_t byte) {

@@ -1,7 +1,7 @@
 #include "cache.h"
-#include <string.h>
-#include <stdlib.h>
 #include <assert.h>
+#include <stdlib.h>
+#include <string.h>
 
 /* utils */
 uint32_t mlog2(double x) {
@@ -68,7 +68,7 @@ void cache_destroy(struct cache *cache) {
     /*YOUR CODE HERE*/
     uint32_t sets_num = cache->config.lines / cache->config.ways;
     for (uint32_t i = 0; i < cache->config.lines; ++i) {
-        if (cache->lines[i].dirty) {
+        if (cache->lines[i].valid && cache->lines[i].dirty) {
             uint32_t addr = (cache->lines[i].tag << (cache->config.address_bits - cache->tag_bits)) |
                             ((i % sets_num) << cache->offset_bits);
             if (cache->lower_cache != NULL) {
@@ -144,7 +144,7 @@ bool cache_read_byte(struct cache *cache, uint32_t addr, uint8_t *byte) {
         // write directly(exist empty entry)
         if (cache->lower_cache) {
             for (uint32_t i = 0; i < cache->config.line_size; ++i)
-                cache_read_byte(cache->lower_cache, addr & ~cache->offset_mask, &line->data[i]);
+                cache_read_byte(cache->lower_cache, (addr & ~cache->offset_mask) | i, &line->data[i]);
         } else {
             mem_load(line->data, addr & ~cache->offset_mask, cache->config.line_size);
         }
@@ -198,7 +198,7 @@ bool cache_write_byte(struct cache *cache, uint32_t addr, uint8_t byte) {
     if (!line->valid) {
         if (cache->lower_cache) {
             for (uint32_t i = 0; i < cache->config.line_size; ++i)
-                cache_read_byte(cache->lower_cache, addr & ~cache->offset_mask, &line->data[i]);
+                cache_read_byte(cache->lower_cache, (addr & ~cache->offset_mask) | i, &line->data[i]);
         } else {
             mem_load(line->data, addr & ~cache->offset_mask, cache->config.line_size);
         }

@@ -162,5 +162,72 @@ bool cache_read_byte(struct cache *cache, uint32_t addr, uint8_t *byte) {
 /* Write one byte into a specific address. return hit=true/miss=false*/
 bool cache_write_byte(struct cache *cache, uint32_t addr, uint8_t byte) {
     /*YOUR CODE HERE*/
-    return true;
+    uint32_t sets_num = cache->config.lines / cache->config.ways;
+    uint32_t offset = addr & cache->offset_mask;
+    uint32_t index = (addr & cache->index_mask) >> cache->offset_bits;
+    uint32_t tag = (addr & cache->tag_mask) >> (cache->offset_bits + cache->index_bits);
+
+    /***************************** hit *****************************/
+    for (uint32_t i = 0; i < cache->config.ways; ++i) {
+        uint32_t line_index = i * sets_num + index;
+        if (cache->lines[line_index].valid && cache->lines[line_index].tag == tag) {
+            cache->lines[line_index].last_access = get_timestamp();
+            cache->lines[line_index].data[offset] = byte;
+            if (cache->config.write_back) {
+                cache->lines[line_index].dirty = true;
+            } else {
+                if (cache->lower_cache) {
+                    cache_write_byte(cache->lower_cache, addr, byte);
+                } else {
+                    mem_store(&byte, addr, 1);
+                }
+            }
+            return true;
+        }
+    }
+
+    /***************************** miss *****************************/
+    struct cache_line *line = &cache->lines[0];
+    for (uint32_t i = 0; i < cache->config.ways; ++i) {
+        uint32_t line_index = i * sets_num + index;
+        if (!cache->lines[line_index].valid || cache->lines[line_index].last_access < line->last_access)
+            line = &cache->lines[line_index];
+    }
+    line->last_access = get_timestamp();
+
+    if (!line->valid) {
+        if (cache->lower_cache) {
+            for (uint32_t i = 0; i < cache->config.line_size; ++i)
+                cache_read_byte(cache->lower_cache, addr & ~cache->offset_mask, &line->data[i]);
+        } else {
+            mem_load(line->data, addr & ~cache->offset_mask, cache->config.line_size);
+        }
+        line->valid = true;
+        line->tag = tag;
+        line->data[offset] = byte;
+        if (cache->config.write_back) {
+            line->dirty = true;
+        } else {
+            if (cache->lower_cache) {
+                cache_write_byte(cache->lower_cache, addr, byte);
+            } else {
+                mem_store(&byte, addr, 1);
+            }
+        }
+        return false;
+    } else {
+        replace(cache, line, addr);
+        line->data[offset] = byte;
+        if (cache->config.write_back) {
+            line->dirty = true;
+        } else {
+            if (cache->lower_cache) {
+                cache_write_byte(cache->lower_cache, addr, byte);
+            } else {
+                mem_store(&byte, addr, 1);
+            }
+        }
+    }
+
+    return false;
 }

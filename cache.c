@@ -4,12 +4,9 @@
 #include <string.h>
 
 /* utils */
-uint32_t mlog2(double x) {
+uint32_t mlog2(uint32_t x) {
     uint32_t res = 0;
-    while (x - 1 > .001) {
-        x /= 2;
-        res++;
-    }
+    while ((x >> res) > 1) res++;
     return res;
 }
 
@@ -22,7 +19,7 @@ struct cache *cache_create(struct cache_config config, struct cache *lower_level
     cache->lower_cache = lower_level;
 
     cache->offset_bits = mlog2(cache->config.line_size);
-    cache->index_bits = mlog2((double) cache->config.lines / cache->config.ways);
+    cache->index_bits = mlog2(cache->config.lines / cache->config.ways);
     cache->tag_bits = config.address_bits - cache->offset_bits - cache->index_bits;
 
     cache->offset_mask = (1 << cache->offset_bits) - 1;

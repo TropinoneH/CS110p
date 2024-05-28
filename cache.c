@@ -187,7 +187,7 @@ bool cache_write_byte(struct cache *cache, uint32_t addr, uint8_t byte) {
                 if (cache->lower_cache) {
                     cache_write_byte(cache->lower_cache, addr, byte);
                 } else {
-                    mem_store(&byte, addr, 1);
+                    mem_store(cache->lines[line_index].data, addr & ~cache->offset_mask, cache->config.line_size);
                 }
             }
             return true;

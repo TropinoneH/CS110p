@@ -25,6 +25,7 @@ struct cache *cache_create(struct cache_config config, struct cache *lower_level
     cache->offset_mask = (1 << cache->offset_bits) - 1;
     cache->index_mask = ((1 << cache->index_bits) - 1) << cache->offset_bits;
     cache->tag_mask = ((1 << cache->tag_bits) - 1) << (cache->offset_bits + cache->index_bits);
+    if (cache->tag_mask == 0) cache->tag_mask -= 1;
 
     cache->lines = (struct cache_line *) malloc(sizeof(struct cache_line) * cache->config.lines);
     if (!cache->lines) {

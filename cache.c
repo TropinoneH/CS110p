@@ -195,7 +195,7 @@ bool cache_write_byte(struct cache *cache, uint32_t addr, uint8_t byte) {
     }
 
     /***************************** miss *****************************/
-    uint32_t target_line = 0;
+    uint32_t target_line = index;
     for (uint32_t i = 0; i < cache->config.ways; ++i) {
         uint32_t line_index = i * sets_num + index;
         if (!cache->lines[line_index].valid) {

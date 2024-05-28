@@ -107,6 +107,8 @@ void replace(struct cache *cache, struct cache_line *line, uint32_t addr) {
     } else {
         mem_load(line->data, lower_addr, cache->config.line_size);
     }
+
+    line->tag = (addr & cache->tag_mask) >> (cache->offset_bits + cache->index_bits);
 }
 
 bool cache_read_byte(struct cache *cache, uint32_t addr, uint8_t *byte) {
@@ -150,7 +152,6 @@ bool cache_read_byte(struct cache *cache, uint32_t addr, uint8_t *byte) {
         line->valid = true;
         line->tag = tag;
         *byte = line->data[offset];
-        return false;
     } else {
         // replace by LRU
         replace(cache, line, addr);
@@ -213,7 +214,6 @@ bool cache_write_byte(struct cache *cache, uint32_t addr, uint8_t byte) {
                 mem_store(line->data, addr & ~cache->offset_mask, cache->config.line_size);
             }
         }
-        return false;
     } else {
         replace(cache, line, addr);
         line->data[offset] = byte;

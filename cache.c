@@ -138,8 +138,11 @@ bool cache_read_byte(struct cache *cache, uint32_t addr, uint8_t *byte) {
     for (uint32_t i = 0; i < cache->config.ways; ++i) {
         // replace by LRU
         uint32_t line_index = i * sets_num + index;
-        if (!cache->lines[line_index].valid ||
-            cache->lines[line_index].last_access < cache->lines[target_line].last_access)
+        if (!cache->lines[line_index].valid) {
+            target_line = line_index;
+            break;
+        }
+        if (cache->lines[line_index].last_access < cache->lines[target_line].last_access)
             target_line = line_index;
     }
     cache->lines[target_line].last_access = get_timestamp();
@@ -195,8 +198,11 @@ bool cache_write_byte(struct cache *cache, uint32_t addr, uint8_t byte) {
     uint32_t target_line = 0;
     for (uint32_t i = 0; i < cache->config.ways; ++i) {
         uint32_t line_index = i * sets_num + index;
-        if (!cache->lines[line_index].valid ||
-            cache->lines[line_index].last_access < cache->lines[target_line].last_access)
+        if (!cache->lines[line_index].valid) {
+            target_line = line_index;
+            break;
+        }
+        if (cache->lines[line_index].last_access < cache->lines[target_line].last_access)
             target_line = line_index;
     }
     cache->lines[target_line].last_access = get_timestamp();

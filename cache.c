@@ -85,30 +85,33 @@ void cache_destroy(struct cache *cache) {
 }
 
 /* Read one byte at a specific address. return hit=true/miss=false */
-void replace(struct cache *cache, struct cache_line *line, uint32_t addr) {
+void replace(struct cache *cache, uint32_t line_index, uint32_t addr) {
     uint32_t lower_addr = addr & ~cache->offset_mask;
 
+    uint32_t origin_addr = cache->lines[line_index].tag << (cache->config.address_bits - cache->tag_bits) |
+                           line_index << cache->index_bits;
+
     // for write back policy
-    if (cache->config.write_back && line->valid && line->dirty) {
+    if (cache->config.write_back && cache->lines[line_index].valid && cache->lines[line_index].dirty) {
         if (cache->lower_cache)
             for (uint32_t i = 0; i < cache->config.line_size; ++i)
-                cache_write_byte(cache->lower_cache, lower_addr + i, line->data[i]);
+                cache_write_byte(cache->lower_cache, origin_addr + i, cache->lines[line_index].data[i]);
         else
-            mem_store(line->data, lower_addr, cache->config.line_size);
+            mem_store(cache->lines[line_index].data, origin_addr, cache->config.line_size);
     }
 
-    line->valid = true;
-    line->dirty = false;
+    cache->lines[line_index].valid = true;
+    cache->lines[line_index].dirty = false;
 
     // load data from memory or lower cache
     if (cache->lower_cache) {
         for (uint32_t i = 0; i < cache->config.line_size; ++i)
-            cache_read_byte(cache->lower_cache, lower_addr + i, &line->data[i]);
+            cache_read_byte(cache->lower_cache, lower_addr + i, &cache->lines[line_index].data[i]);
     } else {
-        mem_load(line->data, lower_addr, cache->config.line_size);
+        mem_load(cache->lines[line_index].data, lower_addr, cache->config.line_size);
     }
 
-    line->tag = (addr & cache->tag_mask) >> (cache->offset_bits + cache->index_bits);
+    cache->lines[line_index].tag = (addr & cache->tag_mask) >> (cache->offset_bits + cache->index_bits);
 }
 
 bool cache_read_byte(struct cache *cache, uint32_t addr, uint8_t *byte) {
@@ -131,31 +134,33 @@ bool cache_read_byte(struct cache *cache, uint32_t addr, uint8_t *byte) {
     /***************************** miss *****************************/
 
     // find line by LRU and update last access time by time stamp
-    struct cache_line *line = &cache->lines[0];
+    uint32_t target_line = index;
     for (uint32_t i = 0; i < cache->config.ways; ++i) {
         // replace by LRU
         uint32_t line_index = i * sets_num + index;
-        if (!cache->lines[line_index].valid || cache->lines[line_index].last_access < line->last_access)
-            line = &cache->lines[line_index];
+        if (!cache->lines[line_index].valid ||
+            cache->lines[line_index].last_access < cache->lines[target_line].last_access)
+            target_line = line_index;
     }
-    line->last_access = get_timestamp();
+    cache->lines[target_line].last_access = get_timestamp();
 
     // load data from memory or lower cache
-    if (!line->valid) {
+    if (!cache->lines[target_line].valid) {
         // write directly(exist empty entry)
         if (cache->lower_cache) {
             for (uint32_t i = 0; i < cache->config.line_size; ++i)
-                cache_read_byte(cache->lower_cache, (addr & ~cache->offset_mask) | i, &line->data[i]);
+                cache_read_byte(cache->lower_cache, (addr & ~cache->offset_mask) | i,
+                                &cache->lines[target_line].data[i]);
         } else {
-            mem_load(line->data, addr & ~cache->offset_mask, cache->config.line_size);
+            mem_load(cache->lines[target_line].data, addr & ~cache->offset_mask, cache->config.line_size);
         }
-        line->valid = true;
-        line->tag = tag;
-        *byte = line->data[offset];
+        cache->lines[target_line].valid = true;
+        cache->lines[target_line].tag = tag;
     } else {
         // replace by LRU
-        replace(cache, line, addr);
+        replace(cache, target_line, addr);
     }
+    *byte = cache->lines[target_line].data[offset];
 
     return false;
 }
@@ -187,43 +192,45 @@ bool cache_write_byte(struct cache *cache, uint32_t addr, uint8_t byte) {
     }
 
     /***************************** miss *****************************/
-    struct cache_line *line = &cache->lines[0];
+    uint32_t target_line = 0;
     for (uint32_t i = 0; i < cache->config.ways; ++i) {
         uint32_t line_index = i * sets_num + index;
-        if (!cache->lines[line_index].valid || cache->lines[line_index].last_access < line->last_access)
-            line = &cache->lines[line_index];
+        if (!cache->lines[line_index].valid ||
+            cache->lines[line_index].last_access < cache->lines[target_line].last_access)
+            target_line = line_index;
     }
-    line->last_access = get_timestamp();
+    cache->lines[target_line].last_access = get_timestamp();
 
-    if (!line->valid) {
+    if (!cache->lines[target_line].valid) {
         if (cache->lower_cache) {
             for (uint32_t i = 0; i < cache->config.line_size; ++i)
-                cache_read_byte(cache->lower_cache, (addr & ~cache->offset_mask) | i, &line->data[i]);
+                cache_read_byte(cache->lower_cache, (addr & ~cache->offset_mask) | i,
+                                &cache->lines[target_line].data[i]);
         } else {
-            mem_load(line->data, addr & ~cache->offset_mask, cache->config.line_size);
+            mem_load(cache->lines[target_line].data, addr & ~cache->offset_mask, cache->config.line_size);
         }
-        line->valid = true;
-        line->tag = tag;
-        line->data[offset] = byte;
+        cache->lines[target_line].valid = true;
+        cache->lines[target_line].tag = tag;
+        cache->lines[target_line].data[offset] = byte;
         if (cache->config.write_back) {
-            line->dirty = true;
+            cache->lines[target_line].dirty = true;
         } else {
             if (cache->lower_cache) {
                 cache_write_byte(cache->lower_cache, addr, byte);
             } else {
-                mem_store(line->data, addr & ~cache->offset_mask, cache->config.line_size);
+                mem_store(cache->lines[target_line].data, addr & ~cache->offset_mask, cache->config.line_size);
             }
         }
     } else {
-        replace(cache, line, addr);
-        line->data[offset] = byte;
+        replace(cache, target_line, addr);
+        cache->lines[target_line].data[offset] = byte;
         if (cache->config.write_back) {
-            line->dirty = true;
+            cache->lines[target_line].dirty = true;
         } else {
             if (cache->lower_cache) {
                 cache_write_byte(cache->lower_cache, addr, byte);
             } else {
-                mem_store(line->data, addr & ~cache->offset_mask, cache->config.line_size);
+                mem_store(cache->lines[target_line].data, addr & ~cache->offset_mask, cache->config.line_size);
             }
         }
     }

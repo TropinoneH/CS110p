@@ -1,5 +1,5 @@
 .vscode/*
 main
-log
+log*
 cmake-build-debug/
 .idea/

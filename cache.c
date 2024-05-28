@@ -215,30 +215,22 @@ bool cache_write_byte(struct cache *cache, uint32_t addr, uint8_t byte) {
         } else {
             mem_load(cache->lines[target_line].data, addr & ~cache->offset_mask, cache->config.line_size);
         }
-        if (cache->config.write_back) {
-            cache->lines[target_line].dirty = true;
-        } else {
-            if (cache->lower_cache) {
-                cache_write_byte(cache->lower_cache, addr, byte);
-            } else {
-                mem_store(cache->lines[target_line].data, addr & ~cache->offset_mask, cache->config.line_size);
-            }
-        }
     } else {
         replace(cache, target_line, addr);
-        if (cache->config.write_back) {
-            cache->lines[target_line].dirty = true;
-        } else {
-            if (cache->lower_cache) {
-                cache_write_byte(cache->lower_cache, addr, byte);
-            } else {
-                mem_store(cache->lines[target_line].data, addr & ~cache->offset_mask, cache->config.line_size);
-            }
-        }
     }
+
     cache->lines[target_line].valid = true;
     cache->lines[target_line].tag = tag;
     cache->lines[target_line].data[offset] = byte;
+    if (cache->config.write_back) {
+        cache->lines[target_line].dirty = true;
+    } else {
+        if (cache->lower_cache) {
+            cache_write_byte(cache->lower_cache, addr, byte);
+        } else {
+            mem_store(cache->lines[target_line].data, addr & ~cache->offset_mask, cache->config.line_size);
+        }
+    }
 
     return false;
 }

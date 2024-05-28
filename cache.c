@@ -84,10 +84,12 @@ void cache_destroy(struct cache *cache) {
 
 /* Read one byte at a specific address. return hit=true/miss=false */
 void replace(struct cache *cache, uint32_t line_index, uint32_t addr) {
+    uint32_t sets_num = cache->config.lines / cache->config.ways;
+
     uint32_t lower_addr = addr & ~cache->offset_mask;
 
     uint32_t origin_addr = cache->lines[line_index].tag << (cache->config.address_bits - cache->tag_bits) |
-                           line_index << cache->offset_bits;
+                           (line_index % sets_num) << cache->offset_bits;
 
     // for write back policy
     if (cache->config.write_back && cache->lines[line_index].valid && cache->lines[line_index].dirty) {

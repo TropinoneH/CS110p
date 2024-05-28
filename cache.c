@@ -43,8 +43,7 @@ struct cache *cache_create(struct cache_config config, struct cache *lower_level
         cache->lines[i].data = (uint8_t *) calloc(cache->config.line_size, sizeof(uint8_t));
 
         if (!cache->lines[i].data) {
-            for (size_t j = 0; j != i; ++j)
-                free(cache->lines[j].data);
+            for (size_t j = 0; j != i; ++j) free(cache->lines[j].data);
             free(cache->lines);
             free(cache);
             return NULL;
@@ -211,7 +210,7 @@ bool cache_write_byte(struct cache *cache, uint32_t addr, uint8_t byte) {
             if (cache->lower_cache) {
                 cache_write_byte(cache->lower_cache, addr, byte);
             } else {
-                mem_store(&byte, addr, 1);
+                mem_store(line->data, addr & ~cache->offset_mask, cache->config.line_size);
             }
         }
         return false;
@@ -224,7 +223,7 @@ bool cache_write_byte(struct cache *cache, uint32_t addr, uint8_t byte) {
             if (cache->lower_cache) {
                 cache_write_byte(cache->lower_cache, addr, byte);
             } else {
-                mem_store(&byte, addr, 1);
+                mem_store(line->data, addr & ~cache->offset_mask, cache->config.line_size);
             }
         }
     }

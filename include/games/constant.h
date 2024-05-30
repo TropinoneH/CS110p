@@ -12,4 +12,7 @@ extern int V_JOY_DOWN;
 extern int V_JOY_LEFT;
 extern int V_JOY_RIGHT;
 
-#endif //PROJ3_CONSTANT_H
+#define PI 3.14159265358979323846
+
+
+#endif//PROJ3_CONSTANT_H

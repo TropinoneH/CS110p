@@ -21,19 +21,15 @@ void IO_init(void) {
     Inp_init(); // inport init
     Lcd_Init(); // LCD init
 
-    startup_scene();
-    // TODO: wait for startup complete
+    if (startup_scene(0) != 0) exit(1);
+    // wait for startup complete
     choose_level();
-}
-
-void main_loop(void) {
-    LCD_Clear(BACK_COLOR);
-    play_loop();
 }
 
 int main(void) {
     IO_init();
-    main_loop();
+    LCD_Clear(BACK_COLOR);
+    play_loop();
 
     return 0;
 }

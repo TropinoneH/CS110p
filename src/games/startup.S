@@ -7,6 +7,12 @@
 startup_scene:
     addi sp, sp, -4
     sw ra, 0(sp)
+    jal delay_1ms
+    lw ra, 0(sp)
+    addi sp, sp, 4
+
+    addi sp, sp, -4
+    sw ra, 0(sp)
     li a0, 0
     jal LCD_Clear
     lw ra, 0(sp)
@@ -174,7 +180,7 @@ startup_scene:
 
     addi sp, sp, -4
     sw ra, 0(sp)
-    li a0, 3000
+    li a0, 300
     jal delay_1ms
     lw ra, 0(sp)
     addi sp, sp, 4
@@ -185,3 +191,6 @@ startup_scene:
     jal LCD_Clear
     lw ra, 0(sp)
     addi sp, sp, 4
+
+    li a0, 0
+    ret

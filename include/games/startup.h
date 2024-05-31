@@ -5,6 +5,6 @@
 #ifndef PROJ3_STARTUP_H
 #define PROJ3_STARTUP_H
 
-void startup_scene();
+int startup_scene(int time);
 
 #endif //PROJ3_STARTUP_H

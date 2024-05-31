@@ -12,7 +12,8 @@ extern int V_JOY_DOWN;
 extern int V_JOY_LEFT;
 extern int V_JOY_RIGHT;
 
-#define PI 3.14159265358979323846
+extern int score;
+extern int health;
 
 
 #endif//PROJ3_CONSTANT_H

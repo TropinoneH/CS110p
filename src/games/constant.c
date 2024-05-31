@@ -11,3 +11,6 @@ int V_JOY_UP = JOY_LEFT;
 int V_JOY_DOWN = JOY_RIGHT;
 int V_JOY_LEFT = JOY_DOWN;
 int V_JOY_RIGHT = JOY_UP;
+
+int score = 0;
+int health = 10;

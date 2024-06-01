@@ -6,6 +6,7 @@
 #define PROJ3_BIRD_H
 
 #include "lcd/lcd.h"
+#include <stdbool.h>
 
 #define TailLength 15
 
@@ -18,6 +19,7 @@ typedef struct {
     u16 last_tail[TailLength][2];
 
     double alive_time;
+    bool invincible;
 } Bird;
 
 void UpdateBird(Bird *bird);

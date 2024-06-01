@@ -11,12 +11,17 @@ void InitialBird(Bird *bird) {
     bird->pos_y = 95;
     bird->v_accelerate = 0.2;
     bird->v_speed = 0;
+    bird->alive_time = 0;
+    bird->invincible = true;
 
     memset(bird->last_tail, 0, sizeof(u16) * 2 * TailLength);
     memset(bird->tail, 0, sizeof(u16) * 2 * TailLength);
 }
 
 void UpdateBird(Bird *bird) {
+    bird->alive_time += 1.0 / FPS;
+    if (bird->alive_time > 1) bird->invincible = false;
+
     bird->v_speed += bird->v_accelerate;
     // update bird
     if (Get_Button(V_JOY_CTR) || Get_Button(V_JOY_UP) || Get_Button(V_JOY_DOWN) ||
@@ -50,7 +55,7 @@ void UpdateBird(Bird *bird) {
 void DrawBird(Bird *bird) {
     if (bird->tail[0][1] < 40 || bird->tail[0][1] > 158) return;
     CleanBird(bird);
-    LCD_DrawPoint_big(BIRD_X, bird->tail[0][1], WHITE);
+    LCD_DrawPoint_big(BIRD_X, bird->tail[0][1], bird->invincible ? GREEN : WHITE);
 }
 
 void CleanBird(Bird *bird) {
@@ -63,7 +68,8 @@ void DrawTail(Bird *bird) {
         if (bird->tail[i][1] == 0 || bird->tail[i + 1][1] == 0)
             continue;
 
-        LCD_DrawLine(bird->tail[i][0], bird->tail[i][1], bird->tail[i + 1][0], bird->tail[i + 1][1], WHITE);
+        LCD_DrawLine(bird->tail[i][0], bird->tail[i][1], bird->tail[i + 1][0], bird->tail[i + 1][1],
+                     bird->invincible ? GREEN : WHITE);
     }
 }
 

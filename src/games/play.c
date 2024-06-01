@@ -69,11 +69,11 @@ void play_loop() {
         if (cur_level == 3 && !Get_Button(BUTTON_1)) continue;
         if (cur_level == 3) debug_info(&bird); else show_info();
 
+        // draw line behind bird
+        DrawBird(&bird);
         // draw wall
         DrawWall(&wall1);
         DrawWall(&wall2);
-        // draw line behind bird
-        DrawBird(&bird);
         // draw bird with tail
         DrawTail(&bird);
 

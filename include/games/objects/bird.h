@@ -7,12 +7,17 @@
 
 #include "lcd/lcd.h"
 
+#define TailLength 15
+
 typedef struct {
     double v_speed;
     double v_accelerate;
     double pos_y;
-    double last_pos_y;
-    double falling_time;
+
+    u16 tail[TailLength][2];
+    u16 last_tail[TailLength][2];
+
+    double alive_time;
 } Bird;
 
 void UpdateBird(Bird *bird);
@@ -20,6 +25,12 @@ void UpdateBird(Bird *bird);
 void InitialBird(Bird *bird);
 
 void DrawBird(Bird *bird);
+
+void CleanBird(Bird *bird);
+
+void DrawTail(Bird *bird);
+
+void CleanTail(Bird *bird);
 
 void FlyBird(Bird *bird);
 

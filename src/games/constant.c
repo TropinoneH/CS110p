@@ -10,6 +10,6 @@ int cur_level = 0;
 int score = 0;
 int health = 10;
 
-int FPS = 20;
+int FPS = 50;
 
 int BIRD_X = 20;

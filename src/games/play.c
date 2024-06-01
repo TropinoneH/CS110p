@@ -29,6 +29,7 @@ void debug_info(Bird *bird) {
     u16 l = 1, ll = 1, n = bird->tail[0][1], nn = bird->tail[1][1];
     while (n /= 10)l++;
     while (nn /= 10)ll++;
+    LCD_Fill(0, 0, 80, 39, BLACK);
     LCD_ShowNum(72 - 8 * l, 0, bird->tail[0][1], l, WHITE);
     LCD_ShowNum(72 - 8 * ll, 20, bird->tail[1][1], ll, WHITE);
 }
@@ -63,24 +64,24 @@ void play_loop() {
         if (get_timer_value() - last_update < ((cur_level == 3) ? 100 : (1000 / FPS)) * (SystemCoreClock / 4000))
             continue;
         last_update = get_timer_value();
-        // TODO: draw bird with speed down
-        // draw line behind bird
-        DrawBird(&bird);
 
         // Debug mode
         if (cur_level == 3 && !Get_Button(BUTTON_1)) continue;
+        if (cur_level == 3) debug_info(&bird); else show_info();
 
         // draw wall
         DrawWall(&wall1);
         DrawWall(&wall2);
+        // draw line behind bird
+        DrawBird(&bird);
+        // draw bird with tail
+        DrawTail(&bird);
 
         // update wall
         UpdateWall(&wall1);
         UpdateWall(&wall2);
         // update bird
-        if (Get_Button(V_JOY_CTR) || Get_Button(V_JOY_UP) || Get_Button(V_JOY_DOWN) ||
-            Get_Button(V_JOY_LEFT) || Get_Button(V_JOY_RIGHT))
-            FlyBird(&bird);
+        UpdateBird(&bird);
 
         // TODO: judge too low or too high
         // TODO: judge hit wall

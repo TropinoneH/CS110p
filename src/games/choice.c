@@ -76,10 +76,5 @@ void choose_level() {
     }
 
     delay_1ms(1000);
-
-    if (cur_level == 3) {
-        if (startup_scene(0)) exit(1);
-        choose_level();
-    }
 }
 

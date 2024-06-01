@@ -20,6 +20,19 @@ void show_info() {
     LCD_ShowNum(72 - 8 * len_h, 20, health, len_h, WHITE);
 }
 
+void debug_info(Bird *bird) {
+    if (bird == NULL) {
+        LCD_ShowNum(72 - 8, 0, 0, 1, WHITE);
+        LCD_ShowNum(72 - 8, 20, 0, 1, WHITE);
+        return;
+    }
+    u16 l = 1, ll = 1, n = bird->tail[0][1], nn = bird->tail[1][1];
+    while (n /= 10)l++;
+    while (nn /= 10)ll++;
+    LCD_ShowNum(72 - 8 * l, 0, bird->tail[0][1], l, WHITE);
+    LCD_ShowNum(72 - 8 * ll, 20, bird->tail[1][1], ll, WHITE);
+}
+
 void draw_border() {
     LCD_DrawLine(0, 40, 79, 40, WHITE);
     LCD_DrawLine(0, 159, 79, 159, WHITE);
@@ -30,7 +43,7 @@ void draw_border() {
 void play_loop() {
     u16 last_update = 0;
     // draw player info: health, score
-    show_info();
+    if (cur_level == 3) debug_info(NULL); else show_info();
     draw_border();
 
     // initialize walls
@@ -47,11 +60,16 @@ void play_loop() {
 
     while (1) {
         // WALL Timer
-        if (get_timer_value() - last_update < (1000 / FPS) * SystemCoreClock / 4000) continue;
+        if (get_timer_value() - last_update < ((cur_level == 3) ? 100 : (1000 / FPS)) * (SystemCoreClock / 4000))
+            continue;
         last_update = get_timer_value();
         // TODO: draw bird with speed down
         // draw line behind bird
         DrawBird(&bird);
+
+        // Debug mode
+        if (cur_level == 3 && !Get_Button(BUTTON_1)) continue;
+
         // draw wall
         DrawWall(&wall1);
         DrawWall(&wall2);
@@ -60,7 +78,6 @@ void play_loop() {
         UpdateWall(&wall1);
         UpdateWall(&wall2);
         // update bird
-        UpdateBird(&bird);
         if (Get_Button(V_JOY_CTR) || Get_Button(V_JOY_UP) || Get_Button(V_JOY_DOWN) ||
             Get_Button(V_JOY_LEFT) || Get_Button(V_JOY_RIGHT))
             FlyBird(&bird);

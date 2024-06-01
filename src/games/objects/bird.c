@@ -8,7 +8,7 @@
 void InitialBird(Bird *bird) {
     bird->pos_y = 95;
     bird->v_accelerate = 0.1;
-    bird->v_speed = 0;
+    bird->v_speed = 2;
     bird->falling_time = 0;
 }
 
@@ -35,6 +35,15 @@ void DrawBird(Bird *bird) {
 
 void FlyBird(Bird * bird) {
     bird->v_speed = 0;
+    bird->v_speed = 1;
     bird->falling_time = 0;
-    bird->pos_y -= 2;
+
+
+    bird->pos_y -= 2.5;
+
+    if (bird->pos_y < 42) {
+        // TODO: health lower
+        bird->debug = (u16) bird->pos_y;
+        InitialBird(bird);
+    }
 }

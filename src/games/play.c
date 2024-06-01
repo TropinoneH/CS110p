@@ -11,13 +11,23 @@
 #include "utils.h"
 
 void show_info() {
-    u16 len_h = 1, len_s = 1, m_h = health, m_s = score;
-    while (m_h /= 10) len_h++;
-    while (m_s /= 10) len_s++;
-    LCD_ShowString(0, 0, (u8 *) "score: ", WHITE);
-    LCD_ShowNum(72 - 8 * len_s, 0, score, len_s, WHITE);
-    LCD_ShowString(0, 20, (u8 *) "life: ", WHITE);
-    LCD_ShowNum(72 - 8 * len_h, 20, health, len_h, WHITE);
+
+    if (l_score != score) {
+        u16 len_s = 1, m_s = score;
+        while (m_s /= 10) len_s++;
+        LCD_Fill(60, 0, 80, 19, BLACK);
+        LCD_ShowString(0, 0, (u8 *) "score: ", WHITE);
+        LCD_ShowNum(72 - 8 * len_s, 0, score, len_s, WHITE);
+        l_score = score;
+    }
+    if (l_health != health) {
+        u16 len_h = 1, m_h = health;
+        while (m_h /= 10) len_h++;
+        LCD_Fill(40, 20, 80, 39, BLACK);
+        LCD_ShowString(0, 20, (u8 *) "life: ", WHITE);
+        LCD_ShowNum(72 - 8 * len_h, 20, health, len_h, WHITE);
+        l_health = health;
+    }
 }
 
 void debug_info(Bird *bird) {
@@ -41,6 +51,30 @@ void draw_border() {
     LCD_DrawLine(79, 40, 79, 160, WHITE);
 }
 
+void judge_hit(Wall *w1, Wall *w2, Bird *bird) {
+    if (w1->pos_x == BIRD_X) {
+        if (bird->pos_y > w1->pos_y && bird->pos_y < w1->pos_y + w1->width) score++;
+        else if (!bird->invincible) {
+            health--;
+            CleanBird(bird);
+            CleanTail(bird);
+            InitialBird(bird);
+        }
+    } else if (w2->pos_x == BIRD_X) {
+        if (bird->pos_y > w2->pos_y && bird->pos_y < w2->pos_y + w2->width) score++;
+        else if (!bird->invincible) {
+            health--;
+            CleanBird(bird);
+            CleanTail(bird);
+            InitialBird(bird);
+        }
+    }
+
+    if (health < 0) {
+        health = 999;
+    }
+}
+
 void play_loop() {
     u16 last_update = 0;
     // draw player info: health, score
@@ -58,6 +92,9 @@ void play_loop() {
     // initialize birds
     Bird bird;
     InitialBird(&bird);
+    memset(bird.last_tail, 0, sizeof(u16) * 2 * TailLength);
+    memset(bird.tail, 0, sizeof(u16) * 2 * TailLength);
+
 
     while (1) {
         // WALL Timer
@@ -83,7 +120,7 @@ void play_loop() {
         // update bird
         UpdateBird(&bird);
 
-        // TODO: judge too low or too high
-        // TODO: judge hit wall
+        // judge hit wall
+        judge_hit(&wall1, &wall2, &bird);
     }
 }

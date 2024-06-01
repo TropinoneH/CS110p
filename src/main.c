@@ -21,7 +21,7 @@ void IO_init(void) {
     Inp_init(); // inport init
     Lcd_Init(); // LCD init
 
-//    if (startup_scene(0) != 0) exit(1);
+    if (startup_scene(0) != 0) exit(1);
     // wait for startup complete
     LCD_Clear(BACK_COLOR);
     choose_level();

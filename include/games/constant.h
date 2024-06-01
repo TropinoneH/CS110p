@@ -16,6 +16,8 @@ extern int cur_level;
 
 extern int score;
 extern int health;
+extern int l_score;
+extern int l_health;
 
 extern int FPS;
 

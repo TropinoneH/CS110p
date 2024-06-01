@@ -44,7 +44,8 @@ void UpdateBird(Bird *bird) {
     bird->tail[0][1] = (u16) (int) bird->pos_y;
 
     if (bird->pos_y < 42 || bird->pos_y > 158) {
-        // TODO: health lower
+        // health lower
+        health = health == 0 ? 999 : health - 1;
         CleanBird(bird);
         CleanTail(bird);
         InitialBird(bird);

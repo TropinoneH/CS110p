@@ -1,9 +1,9 @@
 #include "lcd/lcd.h"
 #include "utils.h"
 
-#include "games/startup.h"
 #include "games/choice.h"
 #include "games/play.h"
+#include "games/startup.h"
 
 #include "games/constant.h"
 

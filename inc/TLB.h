@@ -7,22 +7,22 @@
 #define TLB_SIZE 16
 
 typedef struct TLB_entry {
-  unsigned vpn : FRAME_BITS; // Virtual Page Number
-  unsigned ppn : FRAME_BITS; // Physical Page Number
-  unsigned valid : 1;        // valid bit
-  uint32_t lut;              // last used time
-  // Not possible in this assignment, but can you reduce the `lut' to one bit to
-  // achieve similar result?
+    unsigned vpn : FRAME_BITS; // Virtual Page Number
+    unsigned ppn : FRAME_BITS; // Physical Page Number
+    unsigned valid : 1;        // valid bit
+    uint32_t lut;              // last used time
+                               // Not possible in this assignment, but can you reduce the `lut' to one bit to
+                               // achieve similar result?
 } TLB_entry;
 
 typedef struct TLB {
-  proc_id_t pid;
-  TLB_entry entries[TLB_SIZE];
+    proc_id_t pid;
+    TLB_entry entries[TLB_SIZE];
 
-  // clock:
-  // You can have your own strategy of incrementing
-  // as long as it implements LRU
-  size_t clock;
+    // clock:
+    // You can have your own strategy of incrementing
+    // as long as it implements LRU
+    size_t clock;
 } TLB;
 
 unsigned global_TLB_init(void);

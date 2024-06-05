@@ -6,8 +6,7 @@
 #include "utils.h"
 
 // Not to update TLB
-status_t allocate_page(Process *process, addr_t address,
-                       addr_t physical_address);
+status_t allocate_page(Process *process, addr_t address, addr_t physical_address);
 
 // Should invalidate TLB entry immediately
 status_t deallocate_page(Process *process, addr_t address);

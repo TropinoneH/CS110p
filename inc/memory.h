@@ -7,12 +7,12 @@
 #include <stddef.h>
 
 typedef struct physical_page {
-  byte_t data[PAGE_SIZE];
+    byte_t data[PAGE_SIZE];
 } Physical_page;
 
 typedef struct Memory {
-  Physical_page **pages;
-  size_t size;
+    Physical_page **pages;
+    size_t size;
 } Memory;
 
 unsigned init_memory(size_t num_pages);

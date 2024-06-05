@@ -17,9 +17,9 @@ typedef unsigned char byte_t;   // Byte
 typedef unsigned int addr_t;    // Address
 
 typedef enum status_t {
-  SUCCESS = 0,
-  TLB_HIT,
-  ERROR,
+    SUCCESS = 0,
+    TLB_HIT,
+    ERROR,
 } status_t;
 
 #endif // HW8_UTILS_H

@@ -11,7 +11,25 @@ status_t allocate_page(Process *process, addr_t address, addr_t physical_address
     if (process == NULL) {
         return ERROR;
     }
-    // TODO: Implement me!
+    // Implement me!
+    // decode
+    unsigned int vpn1 = address >> (OFFSET_BITS + L2_BITS);
+    unsigned int vpn2 = (address & ((1 << (OFFSET_BITS + L2_BITS)) - 1)) >> OFFSET_BITS;
+
+    if ((physical_address >> OFFSET_BITS) >= MAX_NUM_PAGES || vpn1 >= (1 << L1_BITS)) return ERROR;
+    if (process->page_table.entries[vpn1].entries != NULL) {
+        if (process->page_table.entries[vpn1].entries[vpn2].valid)
+            return ERROR;
+    }
+    else {
+        // alloc
+        process->page_table.entries[vpn1].entries = calloc(1 << L2_BITS, sizeof(PTE));
+    }
+
+    process->page_table.entries[vpn1].entries[vpn2].frame = (physical_address >> OFFSET_BITS);
+    process->page_table.entries[vpn1].entries[vpn2].valid = 1;
+    process->page_table.entries[vpn1].valid_count++;
+
     return SUCCESS;
 }
 

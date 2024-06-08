@@ -13,15 +13,14 @@ status_t allocate_page(Process *process, addr_t address, addr_t physical_address
     }
     // Implement me!
     // decode
-    unsigned int vpn1 = address >> (OFFSET_BITS + L2_BITS);
-    unsigned int vpn2 = (address & ((1 << (OFFSET_BITS + L2_BITS)) - 1)) >> OFFSET_BITS;
+    uint32_t vpn1 = address >> (OFFSET_BITS + L2_BITS);
+    uint32_t vpn2 = (address & ((1 << (OFFSET_BITS + L2_BITS)) - 1)) >> OFFSET_BITS;
 
     if ((physical_address >> OFFSET_BITS) >= MAX_NUM_PAGES || vpn1 >= (1 << L1_BITS)) return ERROR;
     if (process->page_table.entries[vpn1].entries != NULL) {
         if (process->page_table.entries[vpn1].entries[vpn2].valid)
             return ERROR;
-    }
-    else {
+    } else {
         // alloc
         process->page_table.entries[vpn1].entries = calloc(1 << L2_BITS, sizeof(PTE));
     }
@@ -40,7 +39,12 @@ status_t deallocate_page(Process *process, addr_t address) {
     if (process == NULL) {
         return ERROR;
     }
-    // TODO: Implement me!
+    // Implement me!
+    uint32_t vpn = address >> (OFFSET_BITS + L1_BITS);
+    free(process->page_table.entries[vpn].entries);
+    process->page_table.entries[vpn].valid_count = 0;
+    // remove cur page from TLB
+    remove_TLB(process->pid, vpn);
     return SUCCESS;
 }
 

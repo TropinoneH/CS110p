@@ -40,9 +40,16 @@ status_t deallocate_page(Process *process, addr_t address) {
         return ERROR;
     }
     // Implement me!
-    uint32_t vpn = address >> (OFFSET_BITS + L1_BITS);
-    free(process->page_table.entries[vpn].entries);
-    process->page_table.entries[vpn].valid_count = 0;
+    uint32_t vpn1 = address >> (OFFSET_BITS + L2_BITS);
+    uint32_t vpn2 = (address & ((1 << (OFFSET_BITS + L2_BITS)) - 1)) >> OFFSET_BITS;
+    uint32_t vpn = address >> OFFSET_BITS;
+
+    if (vpn1 >= (1 << L1_BITS)) return ERROR;
+    if (process->page_table.entries[vpn1].entries == NULL || !process->page_table.entries[vpn1].entries[vpn2].valid) return ERROR;
+
+    free(process->page_table.entries[vpn1].entries);
+    process->page_table.entries[vpn1].entries = NULL;
+    process->page_table.entries[vpn1].valid_count = 0;
     // remove cur page from TLB
     remove_TLB(process->pid, vpn);
     return SUCCESS;

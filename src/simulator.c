@@ -93,7 +93,8 @@ status_t write_byte(Process *process, addr_t address, const byte_t *byte) {
 
     uint32_t ppn = read_TLB(process->pid, vpn);
     if (ppn != (uint32_t) -1) {
-        // TODO: write in
+        // write in
+        main_memory->pages[ppn]->data[offset] = *byte;
         return TLB_HIT;
     }
 

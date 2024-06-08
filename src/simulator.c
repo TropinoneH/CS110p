@@ -53,7 +53,28 @@ status_t read_byte(Process *process, addr_t address, byte_t *byte) {
     if (process == NULL) {
         return ERROR;
     }
-    // TODO: Implement me!
+    // Implement me!
+    uint32_t vpn1 = address >> (OFFSET_BITS + L2_BITS);
+    uint32_t vpn2 = (address & ((1 << (OFFSET_BITS + L2_BITS)) - 1)) >> OFFSET_BITS;
+    uint32_t vpn = address >> OFFSET_BITS;
+
+    uint32_t offset = address & ((1 << OFFSET_BITS) - 1);
+
+    // find in TLB
+    uint32_t ppn = read_TLB(process->pid, vpn);
+    if (ppn != (uint32_t) -1) {
+        // hit
+        *byte = main_memory->pages[ppn]->data[offset];
+        return TLB_HIT;
+    }
+    // walk
+    if (process->page_table.entries[vpn1].entries == NULL || !process->page_table.entries[vpn1].entries[vpn2].valid)
+        return ERROR;
+
+    ppn = process->page_table.entries[vpn1].entries[vpn2].frame;
+    write_TLB(process->pid, vpn, ppn);
+
+    *byte = main_memory->pages[ppn]->data[offset];
     return SUCCESS;
 }
 

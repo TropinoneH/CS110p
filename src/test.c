@@ -14,16 +14,14 @@ void baseline(int N, int step, double *p, double *p_next);
 void impl(int N, int step, double *p);
 
 void display_time(struct timespec start, struct timespec end) {
-    printf("%fms\n", (double) (end.tv_sec - start.tv_sec) * 1000.0f +
-                             (double) (end.tv_nsec - start.tv_nsec) / 1000000.0f);
+    printf("%fms\n", (double) (end.tv_sec - start.tv_sec) * 1000.0f + (double) (end.tv_nsec - start.tv_nsec) / 1000000.0f);
 }
 
-bool is_legal_answer(int N, double *ref_p, double *ref_p_next, double *p) {
+bool is_legal_answer(double *ref_p, double *ref_p_next, double *p) {
     double diff = 0;
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
-            if (fabs(ref_p[i * N + j] - p[i * N + j]) <
-                fabs(ref_p_next[i * N + j] - p[i * N + j])) {
+            if (fabs(ref_p[i * N + j] - p[i * N + j]) < fabs(ref_p_next[i * N + j] - p[i * N + j])) {
                 diff += (ref_p[i * N + j] - p[i * N + j]) * (ref_p[i * N + j] - p[i * N + j]);
             } else {
                 diff += (ref_p_next[i * N + j] - p[i * N + j]) * (ref_p_next[i * N + j] - p[i * N + j]);
@@ -67,7 +65,7 @@ int main(void) {
     clock_gettime(CLOCK_MONOTONIC, &end);
     printf("Yours:    ");
     display_time(start, end);
-    if (is_legal_answer(N, ref_p, ref_p_next, p)) {
+    if (is_legal_answer(ref_p, ref_p_next, p)) {
         puts("-------Pass-------");
     } else {
         puts("x-x-x-Invalid-x-x-x");

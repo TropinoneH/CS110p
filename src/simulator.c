@@ -44,7 +44,6 @@ status_t deallocate_page(Process *process, addr_t address) {
     uint32_t vpn2 = (address & ((1 << (OFFSET_BITS + L2_BITS)) - 1)) >> OFFSET_BITS;
     uint32_t vpn = address >> OFFSET_BITS;
 
-    if (vpn1 >= (1 << L1_BITS)) return ERROR;
     if (process->page_table.entries[vpn1].entries == NULL || !process->page_table.entries[vpn1].entries[vpn2].valid) return ERROR;
 
     free(process->page_table.entries[vpn1].entries);

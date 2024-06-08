@@ -6,10 +6,10 @@ all:
 	$(CC) $(CFLAGS) -o vm_tlb main.c src/simulator.c src/memory.c src/process.c src/TLB.c
 
 memcheck: all
-	$(MEMCHECK) ./vm_tlb REPLACE_ME_WITH_FILENAME
+	$(MEMCHECK) ./vm_tlb ./testcases/10_alloc_to_same.txt
 
 test: all
-	./vm_tlb REPLACE_ME_WITH_FILENAME
+	./vm_tlb ./testcases/10_alloc_to_same.txt
 
 clean:
 	rm -f ./vm_tlb

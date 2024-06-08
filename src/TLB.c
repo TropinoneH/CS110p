@@ -24,7 +24,7 @@ void global_TLB_free(void) {
 unsigned read_TLB(proc_id_t pid, unsigned vpn) {
     if (global_tlb->pid != pid) {
         // flash
-        flush_TLB(global_tlb->pid);
+        flush_TLB(pid);
         return -1;
     }
     for (uint32_t i = 0; i < TLB_SIZE; i++) {
@@ -39,7 +39,7 @@ unsigned read_TLB(proc_id_t pid, unsigned vpn) {
 void write_TLB(proc_id_t pid, unsigned vpn, unsigned ppn) {
     if (global_tlb->pid != pid) {
         // flash
-        flush_TLB(global_tlb->pid);
+        flush_TLB(pid);
     }
     for (uint32_t i = 0; i < TLB_SIZE; i++) {
         if (global_tlb->entries[i].valid && global_tlb->entries[i].vpn == vpn) {
@@ -48,22 +48,27 @@ void write_TLB(proc_id_t pid, unsigned vpn, unsigned ppn) {
             return;
         }
     }
+    uint32_t idx = 0;
     for (uint32_t i = 0; i < TLB_SIZE; i++) {
         if (!global_tlb->entries[i].valid) {
-            global_tlb->entries[i].valid = 1;
-            global_tlb->entries[i].lut = get_timestamp();
-            global_tlb->entries[i].ppn = ppn;
-            return;
+            idx = i;
+            break;
         }
+        if (global_tlb->entries[i].lut < global_tlb->entries[idx].lut) idx = i;
     }
+
+    global_tlb->entries[idx].valid = 1;
+    global_tlb->entries[idx].lut = get_timestamp();
+    global_tlb->entries[idx].ppn = ppn;
+    global_tlb->entries[idx].vpn = vpn;
 }
 
 void remove_TLB(proc_id_t pid, unsigned vpn) {
     if (global_tlb->pid != pid) {
-        flush_TLB(global_tlb->pid);
+        flush_TLB(pid);
         return;
     }
-    for (int32_t i = 0; i < TLB_SIZE; i++){
+    for (int32_t i = 0; i < TLB_SIZE; i++) {
         if (global_tlb->entries[i].valid && global_tlb->entries[i].vpn == vpn) {
             global_tlb->entries[i].valid = 0;
         }
@@ -71,7 +76,7 @@ void remove_TLB(proc_id_t pid, unsigned vpn) {
 }
 
 void flush_TLB(proc_id_t pid) {
-    if (pid != global_tlb->pid) return;
+    global_tlb->pid = pid;
     for (uint32_t i = 0; i < TLB_SIZE; i++) {
         global_tlb->entries[i].valid = 0;
         global_tlb->entries[i].lut = 0;

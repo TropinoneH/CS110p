@@ -46,11 +46,17 @@ status_t deallocate_page(Process *process, addr_t address) {
 
     if (process->page_table.entries[vpn1].entries == NULL || !process->page_table.entries[vpn1].entries[vpn2].valid) return ERROR;
 
-    free(process->page_table.entries[vpn1].entries);
-    process->page_table.entries[vpn1].entries = NULL;
-    process->page_table.entries[vpn1].valid_count = 0;
+    process->page_table.entries[vpn1].entries[vpn2].valid = 0;
     // remove cur page from TLB
     remove_TLB(process->pid, vpn);
+    process->page_table.entries[vpn1].valid_count--;
+
+    // free L1 table
+    if (process->page_table.entries[vpn1].valid_count == 0) {
+        free(process->page_table.entries[vpn1].entries);
+        process->page_table.entries[vpn1].entries = NULL;
+    }
+
     return SUCCESS;
 }
 

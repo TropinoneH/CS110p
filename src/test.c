@@ -6,8 +6,8 @@
 #include <string.h>
 #include <time.h>
 
-int N = 2502;    // length of the square region
-int step = 2000; // Number of update steps
+int N = 2000;    // length of the square region
+int step = 2001; // Number of update steps
 #define EPS 1e-5
 
 void baseline(int N, int step, double *p, double *p_next);
@@ -27,10 +27,12 @@ bool is_legal_answer(double *ref_p, double *ref_p_next, double *p) {
                 diff += (ref_p_next[i * N + j] - p[i * N + j]) * (ref_p_next[i * N + j] - p[i * N + j]);
             }
             if (diff > EPS) {
+                printf("diff: %f\n", diff);
                 return false;
             }
         }
     }
+    printf("diff: %f\n", diff);
     return true;
 }
 
@@ -40,11 +42,10 @@ int main(void) {
     double *p = calloc(N * N, sizeof(double));
 
     // initial values for grid
+    // for (int i = 0; i < N; i++) { ref_p[i] = 1.0f; }
+    // for (int j = 0; j < N; j++) { ref_p[j * N] = 1.0f; }
     for (int i = 0; i < N; i++) {
-        ref_p[i] = 1.0f;
-    }
-    for (int j = 0; j < N; j++) {
-        ref_p[j * N] = 1.0f;
+        for (int j = 0; j < N; j++) { ref_p[i * N + j] = random() % 4; }
     }
 
     memcpy(ref_p_next, ref_p, N * N * sizeof(double));

@@ -7,7 +7,7 @@
 #include <time.h>
 
 int N = 2000;    // length of the square region
-int step = 2001; // Number of update steps
+int step = 2000; // Number of update steps
 #define EPS 1e-5
 
 void baseline(int N, int step, double *p, double *p_next);
@@ -28,6 +28,7 @@ bool is_legal_answer(double *ref_p, double *ref_p_next, double *p) {
             }
             if (diff > EPS) {
                 printf("diff: %f\n", diff);
+                printf("%d, %d: p: %f, p_ref: %f\n", i, j, p[i * N + j], ref_p[i * N + j]);
                 return false;
             }
         }

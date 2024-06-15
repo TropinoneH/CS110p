@@ -11,6 +11,7 @@ int step = 2000; // Number of update steps
 #define EPS 1e-5
 
 void baseline(int N, int step, double *p, double *p_next);
+
 void impl(int N, int step, double *p);
 
 void display_time(struct timespec start, struct timespec end) {
@@ -28,7 +29,7 @@ bool is_legal_answer(double *ref_p, double *ref_p_next, double *p) {
             }
             if (diff > EPS) {
                 printf("diff: %f\n", diff);
-                printf("%d, %d: p: %f, p_ref: %f\n", i, j, p[i * N + j], ref_p[i * N + j]);
+                printf("%d, %d: p: %f, p_ref: %f, p_next: %f\n", i, j, p[i * N + j], ref_p[i * N + j], ref_p_next[i * N + j]);
                 return false;
             }
         }
@@ -43,11 +44,11 @@ int main(void) {
     double *p = calloc(N * N, sizeof(double));
 
     // initial values for grid
-    // for (int i = 0; i < N; i++) { ref_p[i] = 1.0f; }
-    // for (int j = 0; j < N; j++) { ref_p[j * N] = 1.0f; }
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) { ref_p[i * N + j] = random() % 4; }
-    }
+    for (int i = 0; i < N; i++) { ref_p[i] = 1.0f; }
+    for (int j = 0; j < N; j++) { ref_p[j * N] = 1.0f; }
+//    for (int i = 0; i < N; i++) {
+//        for (int j = 0; j < N; j++) { ref_p[i * N + j] = (double) (random() % 4 + 1); }
+//    }
 
     memcpy(ref_p_next, ref_p, N * N * sizeof(double));
     memcpy(p, ref_p, N * N * sizeof(double));

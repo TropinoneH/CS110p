@@ -6,8 +6,8 @@
 #include <string.h>
 #include <time.h>
 
-int N = 2001;    // length of the square region
-int step = 6000; // Number of update steps
+int N = 2000;    // length of the square region
+int step = 10000; // Number of update steps
 #define EPS 1e-5
 
 void baseline(int N, int step, double *p, double *p_next);
@@ -47,7 +47,7 @@ int main(void) {
 //    for (int i = 0; i < N; i++) { ref_p[i] = 1.0f; }
 //    for (int j = 0; j < N; j++) { ref_p[j * N] = 1.0f; }
     for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) { ref_p[i * N + j] = (double) (random() % 4 + 1); }
+        for (int j = 0; j < N; j++) { ref_p[i * N + j] = (double) (random() % 4) / 4 + 0.135; }
     }
 
     memcpy(ref_p_next, ref_p, N * N * sizeof(double));

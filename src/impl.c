@@ -70,26 +70,28 @@ void impl(int N, int step, double *p) {
         odd = odd_next;
         odd_next = temp;
     }
-
-    if (stp % 2 == 0) {
-        for (i = 1; i < N - 1; i++) {
-            for (j = 1; j < half; ++j) {
-                p[i * N + 2 * j - (i & 1)] = odd[i * half + j];
-            }
-        }
-    } else {
+    if (stp & 1) {
+#pragma omp parallel
         for (i = 1; i < N - 1; i++) {
             for (j = 1; j < half - 1; ++j) {
                 p[i * N + 2 * j - (i & 1)] = odd_next[i * half + j];
             }
         }
+    } else {
+#pragma omp parallel
+        for (i = 1; i < N - 1; i++) {
+            for (j = 1; j < half - 1; ++j) {
+                p[i * N + 2 * j - (i & 1)] = odd[i * half + j];
+            }
+        }
+    }
 
-        for (k = stp * 2; k < step + 2; ++k) {
+    step = step + 2 * (stp & 1);
+    for (k = stp * 2; k < step; ++k) {
 #pragma omp parallel for
-            for (i = 1; i < N - 1; ++i) {
-                for (j = 1 + ((k & 1) ^ (i & 1)); j < N - 1; j += 2) {
-                    p[i * N + j] = (p[(i - 1) * N + j] + p[i * N + j - 1] + p[i * N + j + 1] + p[(i + 1) * N + j]) * 0.25;
-                }
+        for (i = 1; i < N - 1; ++i) {
+            for (j = 1 + ((k & 1) ^ (i & 1)); j < N - 1; j += 2) {
+                p[i * N + j] = (p[(i - 1) * N + j] + p[i * N + j - 1] + p[i * N + j + 1] + p[(i + 1) * N + j]) * 0.25;
             }
         }
     }

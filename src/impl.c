@@ -1,101 +1,58 @@
 #include <immintrin.h>
-#include <omp.h>
+#include <malloc.h>
 #include <memory.h>
+#include <omp.h>
 
 void impl(int N, int step, double *p) {
-    /* Your code here */
-    double *temp;
-    int half = (N - 1) / 2 + 2;
-    double *odd = calloc(N * half, sizeof(double));
-    double *odd_next = malloc(N * half * sizeof(double));
+    double *check_p = p;
+    double *p_next = malloc(N * N * sizeof(double));
+    memcpy(p_next, p, N * N * sizeof(double));
+    if (step % 2 == 1) { step--; }
 
-    int i, j, k;
-
-    for (i = 0; i < N; i++) {
-        for (j = 1; j < half; ++j) {
-            odd[i * half + j] = p[i * N + 2 * j - (i & 1)];
-        }
-        odd[i * half] = p[i * N];
-        odd[i * half + half - 1] = p[i * N + N - 1];
-    }
-    memcpy(odd_next, odd, N * half * sizeof(double));
-
-    int stp = step / 2 - 1;
-    for (k = 0; k < stp; ++k) {
+    const int blocksize = 8;
+    // Set the number of threads to 14
+    for (int k = 0; k < step; k += 2) {
 #pragma omp parallel for
-        for (i = 2; i < N - 2; ++i) {
-            for (j = 1 + (i & 1); j < half - 2 + (i & 1); ++j) {
-                odd_next[i * half + j] = 0.0625 * (odd[(i - 2) * half + j] + odd[i * half + j - 1] + odd[i * half + j + 1] + odd[(i + 2) * half + j]) +
-                                         0.125 * (odd[(i - 1) * half + j - (i & 1)] + odd[(i - 1) * half + j + 1 - (i & 1)] +
-                                                  odd[(i + 1) * half + j - (i & 1)] + odd[(i + 1) * half + j + 1 - (i & 1)]) +
-                                         0.25 * odd[i * half + j];
+        for (int i = 2; i < N - 2; i++) {
+            for (int j = 2; j < N - 2; j++) {
+                p_next[i * N + j] = 0.0625 * (p[(i - 2) * N + j] + p[(i + 2) * N + j] + p[i * N + j - 2] + p[i * N + j + 2]) +
+                                    0.125 * (p[(i - 1) * N + j - 1] + p[(i + 1) * N + j - 1] + p[(i - 1) * N + j + 1] + p[(i + 1) * N + j + 1]) +
+                                    0.25 * p[i * N + j];
             }
         }
-        // edge
 #pragma omp parallel for
-        for (i = 2; i < N - 3; i += 2) {
-            // same column, walk row
-            // if N is odd, then rightmost column should walk by i += 2
-            odd_next[(i + 1) * half + 1] = 0.0625 * (odd[(i - 1) * half + 1] + p[i * N] + odd[(i + 1) * half + 2] + p[(i + 2) * N] + odd[(i + 3) * half + 1]) +
-                                           0.125 * (odd[i * half + 1] + odd[(i + 2) * half + 1]) + 0.1875 * (odd[(i + 1) * half + 1]) + 0.25 * p[(i + 1) * N];
-            odd_next[i * half + half - 2] = 0.0625 *
-                                            (odd[(i - 2) * half + half - 2] + p[(i - 1) * N + N - 1] + odd[i * half + half - 3] + p[(i + 1) * N + N - 1] +
-                                             odd[(i + 2) * half + half - 2]) + 0.125 * (odd[(i - 1) * half + half - 2] + odd[(i + 1) * half + half - 2]) +
-                                            0.1875 * odd[i * half + half - 2] + 0.25 * p[i * N + N - 1];
+        for (int i = 2; i < N - 2; i++) {
+            p_next[N + i] = (p[N + i - 2] + p[N + i + 2] + p[3 * N + i] + p[i - 1] + p[i + 1]) / 16.0f + (p[2 * N + i - 1] + p[2 * N + i + 1]) / 8.0f +
+                            p[i] / 4.0f + 3.0f * p[N + i] / 16.0f;
+            p_next[N * i + 1] = (p[N * (i - 2) + 1] + p[N * (i + 2) + 1] + p[3 + N * i] + p[N * (i - 1)] + p[N * (i + 1)]) / 16.0f +
+                                (p[2 + N * (i - 1)] + p[2 + N * (i + 1)]) / 8.0f + p[N * i] / 4.0f + 3.0f * p[N * i + 1] / 16.0f;
+            p_next[N * (i + 1) - 2] = (p[N * (i - 2) + N - 2] + p[N * (i + 2) + N - 2] + p[N * i + N - 4] + p[N * i - 1] + p[N * i + 2 * N - 1]) / 16.0f +
+                                      (p[N * i - 3] + p[2 * N - 3 + N * i]) / 8.0f + p[N * i + N - 1] / 4.0f + 3.0f * p[N * i + N - 2] / 16.0f;
+            p_next[N * (N - 2) + i] =
+                    (p[N * (N - 2) + i - 2] + p[N * (N - 2) + i + 2] + p[N * (N - 4) + i] + p[N * (N - 1) + i - 1] + p[N * (N - 1) + i + 1]) / 16.0f +
+                    (p[i - 1 + N * (N - 3)] + p[i + 1 + N * (N - 3)]) / 8.0f + p[N * (N - 1) + i] / 4.0f + 3.0f * p[N * (N - 2) + i] / 16.0f;
         }
-#pragma omp parallel for
-        for (j = 2; j < half - 1; ++j) {
-            odd_next[half + j] = 0.25 * p[2 * j - 1] + 0.0625 * (p[(j - 1) * 2] + p[j * 2] + odd[half + j - 1] + odd[half + j + 1] + odd[3 * half + j]) +
-                                 0.125 * (odd[2 * half + j - 1] + odd[2 * half + j]) + 0.1875 * odd[half + j];
-            odd_next[(N - 2) * half + j - 1] = 0.0625 * (odd[(N - 4) * half + j - 1] + odd[(N - 2) * half + j - 2] + odd[(N - 2) * half + j] +
-                                                         p[(N - 1) * N + (j - 2) * 2 - 1] + p[(N - 1) * N + 2 * j - 1]) +
-                                               0.125 * (odd[(N - 3) * half + j - 1] + odd[(N - 3) * half + j]) + 0.1875 * odd[(N - 2) * half + j - 1] +
-                                               0.25 * p[(N - 1) * N + 2 * (j - 1) - 1];
-        }
+        p_next[N + 1] = (p[1] + p[N]) / 4.0f + (p[2 * N] + p[2] + p[N + 3] + p[3 * N + 1]) / 16.0f + (p[2 * N + 2] + p[N + 1]) / 8.0f;
 
+        p_next[N * (N - 2) + 1] = (p[(N - 2) * N] + p[N * (N - 1) + 1]) / 4.0f +
+                                  (p[N * (N - 3)] + p[N * (N - 4) + 1] + p[N * (N - 2) + 3] + p[N * (N - 1) + 2]) / 16.0f +
+                                  (p[N * (N - 2) + 1] + p[N * (N - 3) + 2]) / 8.0f;
+        p_next[2 * N - 2] =
+                (p[N - 2] + p[2 * N - 1]) / 4.0f + (p[N - 3] + p[2 * N - 4] + p[4 * N - 2] + p[3 * N - 1]) / 16.0f + (p[2 * N - 2] + p[3 * N - 3]) / 8.0f;
 
-        odd_next[half + 1] =
-                0.0625 * (p[2] + odd[half + 3] + p[2 * N] + odd[3 * half + 1]) + 0.125 * (odd[half + 1] + odd[2 * half + 1]) + 0.25 * (p[1] + p[N]);
-        // only for N is even
-        odd_next[(N - 2) * half + half - 2] =
-                0.0625 * (odd[(N - 4) * half + half - 2] + p[(N - 3) * N + N - 1] + odd[(N - 2) * half + half - 3] + p[(N - 1) * N + N - 3]) +
-                0.125 * (odd[(N - 3) * half + half - 2] + odd[(N - 2) * half + half - 2]) + 0.25 * (p[(N - 2) * N + N - 1] + p[(N - 1) * N + N - 2]);
-        // only for N is odd
-//            odd_next[half + half - 2] = 0.0625 * (p[N - 3] + odd[half + half - 3] + p[2 * N + N - 1] + odd[3 * half + half - 2]) +
-//                                        0.125 * (odd[half + half - 2] + odd[2 * half + half - 3]) + 0.25 * (p[N - 2] + p[N + N - 1]);
-//            odd_next[(N - 2) * half + 1] = 0.0625 * (odd[(N - 4) * half + 1] + p[(N - 3) * N] + odd[(N - 2) * half + 2] + p[(N - 1) * N + 2]) +
-//                                           0.125 * (odd[(N - 3) * half + 1] + odd[(N - 2) * half + 1]) + 0.25 * (p[(N - 2) * N] + p[(N - 1) * N + 1]);
+        p_next[N * (N - 2) + N - 2] = (p[N * (N - 4) + N - 2] + p[N * (N - 3) + N - 1] + p[N * (N - 2) + N - 4] + p[N * (N - 1) + N - 3]) / 16.0f +
+                                      (p[N * (N - 3) + N - 3] + p[N * (N - 2) + N - 2]) / 8.0f + (p[N * (N - 2) + N - 1] + p[N * (N - 1) + N - 2]) / 4.0f;
 
-        temp = odd;
-        odd = odd_next;
-        odd_next = temp;
+        double *temp = p;
+        p = p_next;
+        p_next = temp;
     }
-    if (stp & 1) {
-#pragma omp parallel
-        for (i = 1; i < N - 1; i++) {
-            for (j = 1; j < half - 1; ++j) {
-                p[i * N + 2 * j - (i & 1)] = odd_next[i * half + j];
-            }
-        }
-    } else {
-#pragma omp parallel
-        for (i = 1; i < N - 1; i++) {
-            for (j = 1; j < half - 1; ++j) {
-                p[i * N + 2 * j - (i & 1)] = odd[i * half + j];
-            }
-        }
+    if (p != check_p) {
+        memcpy(p_next, p, N * N * sizeof(double));
+        double *temp = p;
+        p = p_next;
+        p_next = temp;
     }
 
-    step = step + 2 * (stp & 1);
-    for (k = stp * 2; k < step; ++k) {
-#pragma omp parallel for
-        for (i = 1; i < N - 1; ++i) {
-            for (j = 1 + ((k & 1) ^ (i & 1)); j < N - 1; j += 2) {
-                p[i * N + j] = (p[(i - 1) * N + j] + p[i * N + j - 1] + p[i * N + j + 1] + p[(i + 1) * N + j]) * 0.25;
-            }
-        }
-    }
-
-    free(odd);
-    free(odd_next);
+    free(p_next);
 }

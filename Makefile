@@ -6,7 +6,7 @@ BIN = $(BUILD_DIR)/test
 
 $(shell mkdir -p $(BUILD_DIR))
 
-$(BIN): src/test.c src/baseline.c src/impl.c
+$(BIN): src/test.c src/baseline.c src/impl_pp.c
 	@$(CC) $(CFLAGS) $^ -o $@
 
 run: $(BIN)	

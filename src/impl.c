@@ -9,7 +9,6 @@ void impl(int N, int step, double *p) {
     memcpy(p_next, p, N * N * sizeof(double));
     if (step % 2 == 1) { step--; }
 
-    const int blocksize = 8;
     // Set the number of threads to 14
     for (int k = 0; k < step; k += 2) {
 #pragma omp parallel for

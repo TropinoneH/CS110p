@@ -6,7 +6,7 @@
 #include <string.h>
 #include <time.h>
 
-int N = 2000;    // length of the square region
+int N = 2001;    // length of the square region
 int step = 6000; // Number of update steps
 #define EPS 1e-5
 
